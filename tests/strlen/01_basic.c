@@ -6,11 +6,11 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 17:27:32 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/23 18:23:57 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../framework/libunit.h"
+#include "../tests.h"
 
 int	strlen_test_basic(void)
 {

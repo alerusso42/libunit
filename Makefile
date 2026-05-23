@@ -1,13 +1,15 @@
 NAME = libunit.a
-LIBUNIT = 
-SRC = $(addprefix framework/, cleanup.c  error.c  launch_test.c  load_test.c  print_test.c)
+LIBUNIT =  $(addprefix framework/, cleanup.c  error.c  launch_test.c  load_test.c  print_test.c)
+LIBFT = $(addprefix libft/, ft_strlen.c)
+SRC = $(LIBUNIT) $(LIBFT)
 # SRC_BONUS = 
-OBJ = $(SRC:.c=.o)
+OBJ_SRC = $(SRC:.c=.o)
+OBJ_LIBFT = $(LIBFT:.c=.o)
+OBJ = $(OBJ_SRC) $(OBJ_LIBFT)
 # OBJ_BONUS = $(SRC_BONUS:.c=.o)
 COMP = cc -g -Wall -Werror -Wextra
 
 all: $(NAME)
-	
 
 $(NAME) : $(OBJ)
 # 	cp $(LIBFT) $(NAME)
@@ -22,6 +24,7 @@ $(NAME) : $(OBJ)
 # 	$(MAKE) -C $(LIBFT_RELATIVE_PATH)
 
 %.o: %.c
+	echo obj: $(SRC)
 	$(COMP) -c $< -o $@
 
 clean: 

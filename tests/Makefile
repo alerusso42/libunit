@@ -7,8 +7,8 @@ COMP = cc -g -Wall -Werror -Wextra
 all: $(NAME)
 	
 $(NAME) : $(LIBUNIT) $(OBJ) 
-	$(shell ls ../libunit.a >2 /dev/null || (cd ../ ; make))
 	echo $(SRC)
+	$(COMP) $(OBJ) $(LIBUNIT) -o $(NAME)
 
 $(LIBUNIT):
 	$(MAKE) -C ../
@@ -20,7 +20,7 @@ clean:
 	rm -f $(OBJ) $(OBJ_BONUS) *.out
 
 fclean: clean
-	rm -f $(LIBUNIT)
+	rm -f $(NAME)
 
 re: fclean all
 
