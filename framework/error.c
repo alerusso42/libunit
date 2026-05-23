@@ -1,18 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   error.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/23 17:30:46 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 17:31:16 by alerusso         ###   ########.fr       */
+/*   Created: 2026/05/23 15:20:42 by alerusso          #+#    #+#             */
+/*   Updated: 2026/05/23 15:23:56 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../tests.h"
+#include "libunit.h"
 
-int	main()
+void	error(t_test_list *list, char *log)
 {
-	return strlen_launcher();
+	cleanup(list);
+	write(1, log, ft_strlen(log));
+	exit(1);
 }

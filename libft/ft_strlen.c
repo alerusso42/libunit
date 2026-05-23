@@ -1,18 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_strlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/23 17:30:46 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 17:31:16 by alerusso         ###   ########.fr       */
+/*   Created: 2026/05/23 15:26:02 by alerusso          #+#    #+#             */
+/*   Updated: 2026/05/23 17:20:13 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../tests.h"
+#include "libft.h"
 
-int	main()
+int	ft_strlen(char *s)
 {
-	return strlen_launcher();
+	int	i;
+
+	i = 0;
+	while (s[i])
+		i++;
+	return (i);
 }

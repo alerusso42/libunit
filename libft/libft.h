@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/23 17:30:46 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 17:31:16 by alerusso         ###   ########.fr       */
+/*   Created: 2026/05/23 15:25:02 by alerusso          #+#    #+#             */
+/*   Updated: 2026/05/23 15:25:56 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../tests.h"
+#ifndef LIBFT_H
+# define LIBFT_H
 
-int	main()
-{
-	return strlen_launcher();
-}
+int	ft_strlen(char *s);
+
+#endif

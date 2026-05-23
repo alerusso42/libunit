@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   01_basic.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/23 17:30:46 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 17:31:16 by alerusso         ###   ########.fr       */
+/*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
+/*   Updated: 2026/05/23 17:27:32 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../tests.h"
+#include "../../framework/libunit.h"
 
-int	main()
+int	strlen_test_basic(void)
 {
-	return strlen_launcher();
+	return (-(ft_strlen("ciao") != 4));
 }
