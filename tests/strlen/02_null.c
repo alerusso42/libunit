@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   01_basic.c                                         :+:      :+:    :+:   */
+/*   02_null.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 19:53:09 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/23 19:53:03 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
 # include <signal.h>
 
-int	strlen_test_basic(void)
+int	strlen_test_null(void)
 {
-	return (-(ft_strlen(NULL) != 4));
+	return (-(ft_strlen("ciao") != 4));
 }

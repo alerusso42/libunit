@@ -6,7 +6,7 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 16:10:09 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 18:09:59 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/23 19:24:57 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	launch_tests(t_test_list *list, char *func_name)
 	{
 		pid = fork();
 		if (pid == -1)
-			error(list, "");
+		error(list, "");
 		else if (pid == 0)
 		{
 			list->status = curr->test_func();
@@ -37,6 +37,7 @@ int	launch_tests(t_test_list *list, char *func_name)
 		print_test(curr, func_name);
 		curr = curr->next;
 	}
+	cleanup(list);
 	return (-(list->status != 0));
 }
 

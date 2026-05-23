@@ -6,18 +6,11 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 16:34:17 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 18:45:06 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/23 19:56:49 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libunit.h"
-
-/*
-        if (WIFEXITED(wstatus)
-		WEXITSTATUS(wstatus));
-       WIFSIGNALED(wstatus)) {
-       WTERMSIG(wstatus));
-*/
 
 //[test_function]: [test_name] : [status]
 void	print_test(t_test_node *node, char *func_name)

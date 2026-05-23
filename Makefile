@@ -28,10 +28,12 @@ $(NAME) : $(OBJ)
 
 clean: 
 	rm -f $(OBJ) $(OBJ_BONUS) *.out
+	$(MAKE) clean -C tests
 # 	$(MAKE) clean -C $(LIBFT_RELATIVE_PATH)
 
 fclean: clean
 	rm -f $(NAME)
+	$(MAKE) fclean -C tests
 # 	$(MAKE) fclean -C $(LIBFT_RELATIVE_PATH)
 
 re: fclean all
@@ -41,7 +43,7 @@ test: all
 
 val: all
 	clear
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s $(NAME)
+	$(MAKE) val -C tests
 
 
 .PHONY: all clean fclean re main gdb run valgrind val val_noflags

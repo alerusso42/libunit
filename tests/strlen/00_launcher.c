@@ -6,7 +6,7 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:23 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 17:28:52 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/23 19:47:18 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,5 +18,6 @@ int	strlen_launcher(void)
 
 	list = (t_test_list){0};
 	load_test(&list, "basic_test", strlen_test_basic);
+	load_test(&list, "basic_test", strlen_test_null);
 	return (launch_tests(&list, "STRLEN"));
 }

@@ -1,6 +1,6 @@
 NAME = test.out
 LIBUNIT = ../libunit.a
-SRC = main.c $(addprefix strlen/, 00_launcher.c  01_basic.c)
+SRC = main.c $(addprefix strlen/, 00_launcher.c  01_basic.c 02_null.c)
 OBJ = $(SRC:.c=.o)
 COMP = cc -g -Wall -Werror -Wextra
 
@@ -26,6 +26,9 @@ re: fclean all
 
 test: all
 	./$(NAME)
+
+val: all
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s ./$(NAME)
 
 .PHONY: all clean fclean re test
 .SILENT:
