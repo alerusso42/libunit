@@ -25,6 +25,7 @@ fclean: clean
 re: fclean all
 
 test: all
-	echo "tester"
+	./$(NAME)
 
-.PHONY: all clean fclean re main gdb run valgrind val val_noflags
+.PHONY: all clean fclean re test
+.SILENT:

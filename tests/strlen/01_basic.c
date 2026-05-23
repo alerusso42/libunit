@@ -6,7 +6,7 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 18:23:57 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/23 18:46:53 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,5 @@
 
 int	strlen_test_basic(void)
 {
-	return (-(ft_strlen("ciao") != 4));
+	return (-(ft_strlen("ciao") != 42));
 }

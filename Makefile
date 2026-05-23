@@ -24,7 +24,6 @@ $(NAME) : $(OBJ)
 # 	$(MAKE) -C $(LIBFT_RELATIVE_PATH)
 
 %.o: %.c
-	echo obj: $(SRC)
 	$(COMP) -c $< -o $@
 
 clean: 
@@ -38,12 +37,11 @@ fclean: clean
 re: fclean all
 
 test: all
-	echo "tester"
+	$(MAKE) test -C tests
 
-# val: re clean
-# 	$(COMP) main.c $(NAME)
-# 	clear
-# 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s ./a.out
+val: all
+	clear
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s $(NAME)
 
 
 .PHONY: all clean fclean re main gdb run valgrind val val_noflags
