@@ -10,31 +10,28 @@
 
 # testlist
 ### Cosa fa?
-contiene i test
+lista di test con nome, funzione e status
 
 ### Codice esempio
 ```c
 t_array	[s_test]
 struct s_test
 {
-	int		(*test_func)(void);
-	char	*name;
+	int				(*test_func)(void);
+	char			*name;
 	struct s_test	*next;
+	int				sig;
+	int				success;
 };
 ```
 
 ### Dove si mette?
 
-# Macro
+# scegliere test
+vediamo
 
 
-# Enum
-```c
-enum e_test_type
-{
-	BASIC = 1,
-	NULL_TEST,
-	BIG_VALUE,
-	BAD_INPUT,
-};
-```
+## cosa ci serve
+1)	funzioni liste
+
+
