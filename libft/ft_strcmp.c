@@ -1,22 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   02_null.c                                          :+:      :+:    :+:   */
+/*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 23:10:52 by tvanni           ###   ########.fr       */
+/*   Created: 2026/05/23 23:18:30 by tvanni            #+#    #+#             */
+/*   Updated: 2026/05/23 23:20:38 by tvanni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../tests.h"
-# include <signal.h>
-
-int	strlen_test_null(void)
+int	ft_strcmp(char *s1, char *s2)
 {
-	char	*s;
+	int	i;
 
-	s = NULL;
-	return (-(strlen(s) != 0));
+	i = 0;
+	while (s1[i])
+	{
+		if (s1[i] != s2[i])
+			return (s1[i] - s2[i]);
+		i ++;
+	}
+	return (s1[i] - s2[i]);
 }

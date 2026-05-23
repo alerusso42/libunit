@@ -6,7 +6,7 @@
 /*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:30:46 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 23:00:42 by tvanni           ###   ########.fr       */
+/*   Updated: 2026/05/23 23:24:35 by tvanni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,5 +19,6 @@ int	main()
 	output = 0;
 	output -= strlen_launcher();
 	output -= atoi_launcher();
+	output -= strcpy_launcher();
 	return (-(output != 0));
 }

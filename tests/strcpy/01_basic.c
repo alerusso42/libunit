@@ -1,22 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   02_null.c                                          :+:      :+:    :+:   */
+/*   01_basic.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 23:10:52 by tvanni           ###   ########.fr       */
+/*   Created: 2026/05/23 23:16:29 by tvanni            #+#    #+#             */
+/*   Updated: 2026/05/23 23:22:44 by tvanni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
-# include <signal.h>
 
-int	strlen_test_null(void)
+int	strcpy_test_basic(void)
 {
-	char	*s;
+	char	*s1;
+	char	s2[6];
 
-	s = NULL;
-	return (-(strlen(s) != 0));
+	s1 = "hello";
+	return (ft_strcmp(strcpy(s2, s1), "hello"));
 }

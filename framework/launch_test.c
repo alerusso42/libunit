@@ -6,12 +6,11 @@
 /*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 16:10:09 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 22:00:37 by tvanni           ###   ########.fr       */
+/*   Updated: 2026/05/23 23:29:37 by tvanni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libunit.h"
-#include <stdio.h>
 
 int	fork_test(t_test_list *list, t_test_node *curr)
 {
@@ -33,7 +32,6 @@ int	fork_test(t_test_list *list, t_test_node *curr)
 
 void	print_result(int succeded, int total)
 {
-	printf("succeded: %d\n", succeded);
 	write(1, "\ntests succeded: ", 17);
 	ft_putnbr(succeded);
 	write(1, "/", 1);

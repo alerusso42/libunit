@@ -6,7 +6,7 @@
 /*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 15:25:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 22:14:02 by tvanni           ###   ########.fr       */
+/*   Updated: 2026/05/23 23:21:42 by tvanni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,9 @@
 
 # define BASE "0123456789"
 
-int	ft_strlen(char *s);
+int		ft_atoi(char *str);
 void	ft_putnbr(int num);
+int		ft_strlen(char *s);
+int		ft_strcmp(char *s1, char *s2);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:24:48 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 23:01:01 by tvanni           ###   ########.fr       */
+/*   Updated: 2026/05/23 23:24:23 by tvanni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,5 +29,9 @@ int	atoi_test_basic(void);
 int	atoi_test_null(void);
 int	atoi_test_partial_num(void);
 int	atoi_test_negative(void);
+
+// STRCPY - strcpy
+int	strcpy_launcher(void);
+int	strcpy_test_basic(void);
 
 #endif
