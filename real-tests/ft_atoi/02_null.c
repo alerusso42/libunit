@@ -1,23 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   02_null.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/23 22:26:59 by tvanni            #+#    #+#             */
-/*   Updated: 2026/05/23 22:53:22 by tvanni           ###   ########.fr       */
+/*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
+/*   Updated: 2026/05/23 22:48:32 by tvanni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "tests.h"
+#include "../tests.h"
+# include <signal.h>
 
-int	main()
+int	ft_atoi_test_null(void)
 {
-	int	output;
-
-	output = 0;
-	output -= ft_strlen_launcher();
-	output -= ft_atoi_launcher();
-	return (-(output != 0));
+	return (-(ft_atoi(NULL) != 0));
 }

@@ -6,7 +6,7 @@
 /*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:24:48 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 23:01:01 by tvanni           ###   ########.fr       */
+/*   Updated: 2026/05/23 22:53:54 by tvanni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,19 @@
 # define TESTS_H
 
 #include "../framework/libunit.h"
-#include <string.h>
 
-//SECTION - strlen
-int	strlen_launcher(void);
-int	strlen_test_basic(void);
-int	strlen_test_null(void);
-int	strlen_test_long(void);
-int	strlen_test_short(void);
+//SECTION - ft_strlen
+int	ft_strlen_launcher(void);
+int	ft_strlen_test_basic(void);
+int	ft_strlen_test_null(void);
+int	ft_strlen_test_long(void);
+int	ft_strlen_test_short(void);
 
-// SECTION - atoi
-int	atoi_launcher(void);
-int	atoi_test_basic(void);
-int	atoi_test_null(void);
-int	atoi_test_partial_num(void);
-int	atoi_test_negative(void);
+//SECTION - ft_putnbr
+int	ft_atoi_launcher(void);
+int	ft_atoi_test_basic(void);
+int	ft_atoi_test_null(void);
+int	ft_atoi_test_partial_num(void);
+int	ft_atoi_test_negative(void);
 
 #endif

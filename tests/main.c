@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:30:46 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 18:19:58 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/23 23:00:42 by tvanni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,10 @@
 
 int	main()
 {
-	return strlen_launcher();
+	int	output;
+
+	output = 0;
+	output -= strlen_launcher();
+	output -= atoi_launcher();
+	return (-(output != 0));
 }

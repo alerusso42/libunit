@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   02_null.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 19:53:03 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/23 23:05:28 by tvanni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,5 +15,8 @@
 
 int	strlen_test_null(void)
 {
-	return (-(ft_strlen("ciao") != 4));
+	char	*s;
+
+	s = NULL;
+	return (-(strlen(s) != 0));
 }

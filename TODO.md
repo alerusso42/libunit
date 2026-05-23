@@ -1,7 +1,6 @@
 # PRIORITY 1: FONDAMENTALE!!!
 
-[]	flaggini nel main.c	
-[]	1/2 tests checked
+[X]	1/2 tests checked
 []	norminette
 []	push git scuola
 
@@ -21,5 +20,6 @@
 
 # PRIORITY 3 OTTIMIZZAZIONE:
 
+[]	flaggini nel main.c	
 []	array di stampe per signals
 []	conf per flag ammodo

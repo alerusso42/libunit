@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   01_basic.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/23 17:18:39 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 17:19:37 by alerusso         ###   ########.fr       */
+/*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
+/*   Updated: 2026/05/23 22:28:45 by tvanni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../framework/libunit.h"
+#include "../tests.h"
+# include <signal.h>
 
-int	strlen_test_basic(void)
+int	ft_strlen_test_basic(void)
 {
-	
+	return (-(ft_strlen("hello") != 5));
 }

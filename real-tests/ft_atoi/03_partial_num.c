@@ -1,23 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   03_partial_num.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/23 22:26:59 by tvanni            #+#    #+#             */
-/*   Updated: 2026/05/23 22:53:22 by tvanni           ###   ########.fr       */
+/*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
+/*   Updated: 2026/05/23 22:57:25 by tvanni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "tests.h"
+#include "../tests.h"
+# include <signal.h>
 
-int	main()
+int	ft_atoi_test_partial_num(void)
 {
-	int	output;
+	char	*s;
 
-	output = 0;
-	output -= ft_strlen_launcher();
-	output -= ft_atoi_launcher();
-	return (-(output != 0));
+	s = "+27eoacq; v4t 97c243rwj+-*/<iodvc sw;qap.//'\"\\w3y34ao012';p][db+>]";
+	return (-(ft_atoi(s) != 27));
 }

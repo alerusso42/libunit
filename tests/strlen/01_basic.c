@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   01_basic.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 19:53:09 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/23 23:04:27 by tvanni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,5 +15,5 @@
 
 int	strlen_test_basic(void)
 {
-	return (-(ft_strlen(NULL) != 4));
+	return (-(strlen("hello") != 5));
 }

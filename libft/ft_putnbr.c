@@ -1,23 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_putnbr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/23 22:26:59 by tvanni            #+#    #+#             */
-/*   Updated: 2026/05/23 22:53:22 by tvanni           ###   ########.fr       */
+/*   Created: 2026/05/23 21:29:23 by tvanni            #+#    #+#             */
+/*   Updated: 2026/05/23 21:39:10 by tvanni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "tests.h"
+#include "libft.h"
 
-int	main()
+void	ft_putnbr(int num)
 {
-	int	output;
+	char	*base;
 
-	output = 0;
-	output -= ft_strlen_launcher();
-	output -= ft_atoi_launcher();
-	return (-(output != 0));
+	base = BASE;
+	if (num < 0)
+	{
+		num = -num;
+		write(1, "-", 1);
+	}
+	if (num >= 10)
+	{
+		ft_putnbr(num / 10);
+		ft_putnbr(num % 10);
+	}
+	else
+		write(1, base + num, 1);
 }
