@@ -1,6 +1,6 @@
 NAME = libunit.a
 LIBUNIT = 
-SRC = $(addprefix framework/, cleanup.c  error.c  launch_test.c  libunit.h  load_test.c  print_test.c)
+SRC = $(addprefix framework/, cleanup.c  error.c  launch_test.c  load_test.c  print_test.c)
 # SRC_BONUS = 
 OBJ = $(SRC:.c=.o)
 # OBJ_BONUS = $(SRC_BONUS:.c=.o)
