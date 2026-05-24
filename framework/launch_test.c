@@ -6,7 +6,7 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 16:10:09 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 13:19:58 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 14:05:53 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,5 +68,7 @@ void	print_result(int succeded, int total)
 	ft_putnbr(succeded);
 	write(1, "/", 1);
 	ft_putnbr(total);
+	if (succeded == total)
+		write(1, "\n\033[32mcongratulations! All tests succeded!", 42);
 	write(1, "\033[0m\n\n", 7);
 }

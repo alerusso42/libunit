@@ -58,7 +58,7 @@ val: all
 
 norm:
 	clear
-	-norminette | grep "Error!"
-	-@norminette > /dev/null && echo "\033[32mNorminette OK\033[0m"
+	@norminette | grep "Error!" || echo ""
+	@norminette > /dev/null && echo -e "\033[32mNorminette OK\033[0m" || echo ""
 
 .PHONY: all clean fclean re main gdb run valgrind val val_noflags
