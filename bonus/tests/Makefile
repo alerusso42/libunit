@@ -32,7 +32,7 @@ test: all
 	./$(NAME)
 
 val: all
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --child-silent-after-fork=yes --trace-children=no -s ./$(NAME)
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --child-silent-after-fork=yes --trace-children=no --track-fds=yes  -s ./$(NAME)
 
 .PHONY: all clean fclean re test
 .SILENT:
