@@ -6,11 +6,13 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 16:34:17 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 14:03:30 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 15:02:37 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libunit.h"
+
+void	print_signals(int sig);
 
 //[test_function]: [test_name] : [status]
 void	print_test(t_test_node *node, char *func_name)
@@ -28,11 +30,26 @@ void	print_test(t_test_node *node, char *func_name)
 		write(1, "\033[0m\n", 5);
 		return ;
 	}
-	if (node->sig == SIGSEGV)
+	print_signals(node->sig);
+	write(1, "\033[0m\n", 5);
+}
+
+void	print_signals(int sig)
+{
+	if (sig == SIGSEGV)
 		write(1, "\033[33m[SIGSEGV]", 14);
-	else if (node->sig == SIGBUS)
+	else if (sig == SIGBUS)
 		write(1, "\033[33m[SIGBUS]", 13);
+	else if (sig == SIGALRM)
+		write(1, "\033[33mTIMEOUT!", 13);
+	else if (sig == SIGABRT)
+		write(1, "\033[33mABORTED!", 13);
+	else if (sig == SIGFPE)
+		write(1, "\033[33m[SIGFPE]", 13);
+	else if (sig == SIGPIPE)
+		write(1, "\033[33m[SIGPIPE]", 14);
+	else if (sig == SIGILL)
+		write(1, "\033[33m[SIGILL]", 13);
 	else
 		write(1, "invalid signal!", 15);
-	write(1, "\033[0m\n", 5);
 }

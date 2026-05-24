@@ -6,8 +6,8 @@
 
 ### TEST
 
-[]	4 routine in tests con un caso per tipo
-[]	1 routine con 15 test in real_tests
+[X]	4 routine in tests con un caso per tipo
+[X]	1 routine con 15 test in real_tests
 
 # PRIORITY 2 BONUS:
 
@@ -23,3 +23,4 @@
 []	flaggini nel main.c	
 []	array di stampe per signals
 []	conf per flag ammodo
+[]	script che automatizza creazione test

@@ -3,7 +3,8 @@ LIBUNIT = ../libunit.a
 SRC = main.c \
 		$(addprefix strlen/, 00_launcher.c  01_basic.c 02_null.c 03_long_string.c 04_short_string.c 05_sigbus.c) \
 		$(addprefix atoi/, 00_launcher.c  01_basic.c 02_null.c 03_partial_num.c 04_negative.c) \
-		$(addprefix strcpy/, 00_launcher.c  01_basic.c)
+		$(addprefix strcpy/, 00_launcher.c  01_basic.c) \
+		$(addprefix signals/, $(shell ls signals | grep '\.c'))
 OBJ = $(SRC:.c=.o)
 COMP = cc -g -Wall -Werror -Wextra
 

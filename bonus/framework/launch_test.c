@@ -6,7 +6,7 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 16:10:09 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 14:05:53 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 15:08:37 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ int	fork_test(t_test_list *list, t_test_node *curr)
 		error(list, "");
 	else if (pid == 0)
 	{
+		alarm(1);
 		status = curr->test_func();
 		return (cleanup(list), exit(status), -1);
 	}
