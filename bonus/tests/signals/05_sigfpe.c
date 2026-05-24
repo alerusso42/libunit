@@ -6,7 +6,7 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/24 14:44:16 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 15:01:36 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 17:28:21 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	sig_05_fpe(void)
 {
-	int zero;
+	int	zero;
 
 	zero = 0;
 	return (10 / zero);

@@ -6,12 +6,19 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 15:20:45 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 15:20:53 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 17:47:22 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libunit.h"
 
+/**
+ * @brief initialize the next test node
+ * 
+ * @param list the list of nodes to append the created node to
+ * @param test_type the type of test function saved in the node
+ * @param test the function to load in the node
+ */
 void	load_test(t_test_list *list, char *test_type, int (*test)(void))
 {
 	t_test_node	*last;

@@ -32,21 +32,18 @@ fclean: clean
 re: fclean all
 
 test: all
-	clear
 	@echo -e $(DIV) $(TABS) "TESTS" $(TABS) "\n" $(DIV)
 	-$(MAKE) test -C tests
 	@echo -e $(DIV) $(TABS) "REAL-TESTS" $(TABS) "\n" $(DIV)
 	-$(MAKE) test -C real-tests
 
 val: all
-	clear
 	@echo -e $(DIV) $(TABS) "TESTS" $(TABS) "\n" $(DIV)
 	-$(MAKE) val -C tests
 	@echo -e $(DIV) $(TABS) "REAL-TESTS" $(TABS) "\n" $(DIV)
 	-$(MAKE) val -C real-tests
 
 norm:
-	clear
 	@norminette | grep "Error!" || echo ""
 	@norminette > /dev/null && echo -e "\033[32mNorminette OK\033[0m" || echo ""
 

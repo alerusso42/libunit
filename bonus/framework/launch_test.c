@@ -6,7 +6,7 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 16:10:09 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 16:43:07 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 17:45:11 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,13 @@ void	print_result(int succeded, int total);
 void	print_failure(t_test_list *list, t_test_node *curr, int *failed);
 void	open_log_file(t_test_list *list, char *func_name);
 
+/**
+ * @brief run all tests in a list, loaded in 00_launcher
+ * 
+ * @param list 
+ * @param func_name name of the function to test (es: strlen)
+ * @return int 0 if all tests succeed else -1 
+ */
 int	launch_tests(t_test_list *list, char *func_name)
 {
 	t_test_node	*curr;
@@ -47,6 +54,13 @@ int	launch_tests(t_test_list *list, char *func_name)
 	return (-(failed != 0));
 }
 
+/**
+ * @brief create a new process that runs the test
+ * 
+ * @param list the list to clean up in case of error
+ * @param curr the current test node
+ * @return int 0
+ */
 int	fork_test(t_test_list *list, t_test_node *curr)
 {
 	int	pid;
@@ -87,18 +101,21 @@ void	print_result(int succeded, int total)
 	write(1, "\033[0m\n\n", 7);
 }
 
+/**
+ * @brief create the log directory and the log file
+ * 
+ * @param list the list that contains the fd of the log file
+ * @param func_name the name of the function currently being tested
+ */
 void	open_log_file(t_test_list *list, char *func_name)
 {
 	char	path[256];
 
 	strcpy(path, LOG_PATH);
 	strncat(path, func_name, sizeof(path) - strlen(LOG_PATH) - 1);
-	printf("LOG_PATH: %s\n", LOG_PATH);
-	printf("LOG_PATH: %s\n", getcwd(NULL, 0));
-	printf("path: %s\n", path);
+	strncat(path, ".log", sizeof(path) - 5);
 	mkdir(LOG_PATH, 0777);
 	list->fd = open(path, O_CREAT | O_TRUNC | O_RDWR, 0666);
-	perror("PERROR");
 	if (list->fd == -1)
 		error(list, "failed to open fd\n");
 }

@@ -20,4 +20,14 @@ bonus_test:
 
 re: fclean all
 
-.PHONY: all clean fclean re
+norm: 
+	clear
+	$(MAKE) norm -C mandatory/
+	$(MAKE) norm -C bonus/
+
+val:
+	clear
+	$(MAKE) val -C mandatory/
+	$(MAKE) val -C bonus/
+
+.PHONY: all clean fclean re norm val test bonus_test bonus

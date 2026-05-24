@@ -1,8 +1,8 @@
 # PRIORITY 1: FONDAMENTALE!!!
 
 [X]	1/2 tests checked
-[]	norminette
-[]	push git scuola
+[X]	norminette
+[X]	push git scuola
 
 ### TEST
 
@@ -12,15 +12,12 @@
 # PRIORITY 2 BONUS:
 
 [X]	colori
-[]	STDOUT
+[X]	STDOUT
 [X]	timeout
 [X]	more signals
-[]	log
+[X]	log
 
 
 # PRIORITY 3 OTTIMIZZAZIONE:
 
-[]	flaggini nel main.c	
-[]	array di stampe per signals
-[]	conf per flag ammodo
 []	script che automatizza creazione test
