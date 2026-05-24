@@ -6,7 +6,7 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 18:10:34 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 18:18:41 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 13:20:11 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ enum	e_status
 	STATUS_OK = 0,
 };
 
-typedef struct s_test_list	t_test_list; 
+typedef struct s_test_list	t_test_list;
 typedef struct s_test_node	t_test_node;
 
 struct s_test_list

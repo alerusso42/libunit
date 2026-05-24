@@ -3,18 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 15:25:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 23:21:42 by tvanni           ###   ########.fr       */
+/*   Updated: 2026/05/24 13:19:42 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBFT_H
 # define LIBFT_H
 
-#include <unistd.h>
-
+# include <unistd.h>
 # define BASE "0123456789"
 
 int		ft_atoi(char *str);

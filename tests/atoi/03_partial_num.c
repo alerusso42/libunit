@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   03_partial_num.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 22:56:56 by tvanni           ###   ########.fr       */
+/*   Updated: 2026/05/24 13:18:37 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
-# include <signal.h>
 
 int	atoi_test_partial_num(void)
 {

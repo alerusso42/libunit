@@ -6,12 +6,11 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 11:22:51 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 13:19:17 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
-# include <signal.h>
 
 int	atoi_test_null(void)
 {

@@ -8,6 +8,9 @@ OBJ_LIBFT = $(LIBFT:.c=.o)
 OBJ = $(OBJ_SRC) $(OBJ_LIBFT)
 # OBJ_BONUS = $(SRC_BONUS:.c=.o)
 COMP = cc -g -Wall -Werror -Wextra
+SHELL := /bin/bash				
+DIV = "\033[33m---------------------------\033[0m\n"
+TABS = "-------"
 
 all: $(NAME)
 
@@ -40,15 +43,22 @@ fclean: clean
 re: fclean all
 
 test: all
-	$(MAKE) test -C tests
-
-real: all
-	$(MAKE) test -C real-tests
+	clear
+	@echo -e $(DIV) $(TABS) "TESTS" $(TABS) "\n" $(DIV)
+	-$(MAKE) test -C tests
+	@echo -e $(DIV) $(TABS) "REAL-TESTS" $(TABS) "\n" $(DIV)
+	-$(MAKE) test -C real-tests
 
 val: all
 	clear
-	$(MAKE) val -C tests
-	$(MAKE) val -C real-tests
+	@echo -e $(DIV) $(TABS) "TESTS" $(TABS) "\n" $(DIV)
+	-$(MAKE) val -C tests
+	@echo -e $(DIV) $(TABS) "REAL-TESTS" $(TABS) "\n" $(DIV)
+	-$(MAKE) val -C real-tests
 
+norm:
+	clear
+	-norminette | grep "Error!"
+	-@norminette > /dev/null && echo "\033[32mNorminette OK\033[0m"
 
 .PHONY: all clean fclean re main gdb run valgrind val val_noflags

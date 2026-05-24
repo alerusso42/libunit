@@ -6,12 +6,11 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 11:22:55 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 13:17:25 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
-# include <signal.h>
 
 int	strlen_test_null(void)
 {

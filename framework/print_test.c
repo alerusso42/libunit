@@ -6,7 +6,7 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 16:34:17 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 19:56:49 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 13:20:22 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	print_test(t_test_node *node, char *func_name)
 		return ;
 	}
 	if (node->sig == SIGSEGV)
-		write(1, "\033[33m[SIGSEGV]", 14);	
+		write(1, "\033[33m[SIGSEGV]", 14);
 	else if (node->sig == SIGBUS)
 		write(1, "\033[33m[SIGBUS]", 13);
 	else

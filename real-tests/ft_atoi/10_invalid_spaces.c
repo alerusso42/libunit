@@ -6,12 +6,11 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 11:48:18 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 13:15:51 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
-# include <signal.h>
 
 int	ft_atoi_10_invalid_spaces(void)
 {

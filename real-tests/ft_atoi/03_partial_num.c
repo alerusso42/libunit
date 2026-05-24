@@ -6,12 +6,11 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 11:47:43 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 13:52:10 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
-# include <signal.h>
 
 int	ft_atoi_03_partial_num(void)
 {
