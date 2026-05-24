@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tests.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:24:48 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 23:24:23 by tvanni           ###   ########.fr       */
+/*   Updated: 2026/05/24 11:21:02 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ int	strlen_test_basic(void);
 int	strlen_test_null(void);
 int	strlen_test_long(void);
 int	strlen_test_short(void);
+int	strlen_test_sigbus(void);
 
 // SECTION - atoi
 int	atoi_launcher(void);

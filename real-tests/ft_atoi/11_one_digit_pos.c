@@ -1,22 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   03_partial_num.c                                   :+:      :+:    :+:   */
+/*   11_one_digit_pos.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 11:47:43 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 11:48:23 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
 # include <signal.h>
 
-int	ft_atoi_03_partial_num(void)
+int	ft_atoi_11_1digit_pos(void)
 {
-	char	*s;
-
-	s = "+27eoacq; v4t 97c243rwj+-*/<iodvc sw;qap.//'\"\\w3y34ao012';p][db+>]";
-	return (-(ft_atoi(s) != 27));
+	return (-(ft_atoi(" 1") != 1));
 }

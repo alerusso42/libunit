@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   04_negative.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 22:57:32 by tvanni           ###   ########.fr       */
+/*   Updated: 2026/05/24 11:47:49 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
 # include <signal.h>
 
-int	ft_atoi_test_negative(void)
+int	ft_atoi_04_negative(void)
 {
 	return (-(ft_atoi("- 538") != -538));
 }

@@ -29,11 +29,12 @@ $(NAME) : $(OBJ)
 clean: 
 	rm -f $(OBJ) $(OBJ_BONUS) *.out
 	$(MAKE) clean -C tests
-# 	$(MAKE) clean -C $(LIBFT_RELATIVE_PATH)
+	$(MAKE) clean -C real_tests
 
 fclean: clean
 	rm -f $(NAME)
 	$(MAKE) fclean -C tests
+	$(MAKE) fclean -C real_tests
 # 	$(MAKE) fclean -C $(LIBFT_RELATIVE_PATH)
 
 re: fclean all
@@ -41,9 +42,13 @@ re: fclean all
 test: all
 	$(MAKE) test -C tests
 
+real: all
+	$(MAKE) real -C tests
+
 val: all
 	clear
 	$(MAKE) val -C tests
+	$(MAKE) val -C real_tests
 
 
 .PHONY: all clean fclean re main gdb run valgrind val val_noflags

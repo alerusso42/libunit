@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   01_basic.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 22:48:10 by tvanni           ###   ########.fr       */
+/*   Updated: 2026/05/24 11:47:19 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
 # include <signal.h>
 
-int	ft_atoi_test_basic(void)
+int	ft_atoi_01_basic(void)
 {
 	return (-(ft_atoi("2") != 2));
 }
