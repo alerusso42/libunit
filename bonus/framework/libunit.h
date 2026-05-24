@@ -6,7 +6,7 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 18:10:34 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 14:36:21 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 16:19:25 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,15 @@
 # define LIBUNIT_H
 
 # include <unistd.h>
+# include <string.h>
+# include <fcntl.h>
 # include <stdlib.h>
 # include <signal.h>
+# include <sys/stat.h>
 # include <sys/wait.h>
 # include "../libft/libft.h"
+
+# define LOG_PATH "../log/"
 
 enum	e_status
 {
@@ -34,6 +39,7 @@ struct s_test_list
 	t_test_node	*first;
 	t_test_node	*last;
 	int			status;
+	int			fd;
 };
 
 struct s_test_node
@@ -42,6 +48,7 @@ struct s_test_node
 	char		*name;
 	int			(*test_func)(void);
 	int			sig;
+	int			fd_error;
 	int			status;
 };
 

@@ -6,7 +6,7 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 13:15:41 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 17:07:39 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,9 @@
 
 int	ft_atoi_06_overflow_neg(void)
 {
-	return (-(ft_atoi("-2147483649") != 0));
+	int	n;
+
+	n = ft_atoi("-2147483649");
+	ft_putnbr(n);
+	return (-(n != 0));
 }

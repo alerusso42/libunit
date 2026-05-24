@@ -6,7 +6,7 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 13:15:51 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 17:09:38 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,9 @@
 
 int	ft_atoi_10_invalid_spaces(void)
 {
-	return (-(ft_atoi(" \f\n\r\t\v\t \t") != 0));
+	int	n;
+
+	n = ft_atoi(" \f\n\r\t\v\t \t");
+	ft_putnbr(n);
+	return (-(n != 0));
 }

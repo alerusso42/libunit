@@ -6,7 +6,7 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 15:20:39 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 13:14:10 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 15:21:43 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,4 +28,7 @@ void	cleanup(t_test_list *list)
 	}
 	list->first = NULL;
 	list->last = NULL;
+	if (list->fd != 0)
+		close(list->fd);
+	list->fd = 0;
 }

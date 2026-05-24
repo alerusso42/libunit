@@ -6,7 +6,7 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 13:15:58 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 17:11:07 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,9 @@
 
 int	ft_atoi_13_zero(void)
 {
-	return (-(ft_atoi("0") != 0));
+	int	n;
+
+	n = ft_atoi("0");
+	ft_putnbr(n);
+	return (-(0 != 0));
 }

@@ -1,6 +1,6 @@
 NAME = libunit.a
 LIBUNIT =  $(addprefix framework/, cleanup.c  error.c  launch_test.c  load_test.c  print_test.c)
-LIBFT = $(addprefix libft/, ft_atoi.c ft_putnbr.c ft_strcmp.c ft_strlen.c)
+LIBFT = $(addprefix libft/, ft_printf.c ft_atoi.c ft_putnbr.c ft_strcmp.c ft_strlen.c)
 SRC = $(LIBUNIT) $(LIBFT)
 OBJ_SRC = $(SRC:.c=.o)
 OBJ_LIBFT = $(LIBFT:.c=.o)

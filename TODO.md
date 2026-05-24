@@ -13,8 +13,8 @@
 
 [X]	colori
 []	STDOUT
-[]	timeout
-[]	more signals
+[X]	timeout
+[X]	more signals
 []	log
 
 
