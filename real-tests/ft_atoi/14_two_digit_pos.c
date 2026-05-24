@@ -6,7 +6,7 @@
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:22:02 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 12:20:57 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/05/24 12:55:11 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,5 +15,5 @@
 
 int	ft_atoi_14_2digit_pos(void)
 {
-	return (-(ft_atoi(" 99") != 99));
+	return (-(ft_atoi("99") != 99));
 }

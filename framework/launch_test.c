@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   launch_test.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 16:10:09 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/23 23:29:37 by tvanni           ###   ########.fr       */
+/*   Updated: 2026/05/24 12:56:42 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,12 @@ int	fork_test(t_test_list *list, t_test_node *curr)
 
 void	print_result(int succeded, int total)
 {
+	write(1, "\033[33m", 5);
 	write(1, "\ntests succeded: ", 17);
 	ft_putnbr(succeded);
 	write(1, "/", 1);
 	ft_putnbr(total);
-	write(1, "\n", 1);
+	write(1, "\033[0m\n\n", 7);
 }
 
 int	launch_tests(t_test_list *list, char *func_name)

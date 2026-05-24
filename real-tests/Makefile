@@ -1,10 +1,8 @@
 NAME = test.out
 LIBUNIT = ../libunit.a
-ATOI = $(shell ls real_tests/ft_atoi)
-STRLEN = $(shell ls real_tests/ft_strlen)
 SRC = main.c \
-		$(addprefix ft_strlen/, $(STRLEN))
-		$(addprefix ft_atoi/, $(ATOI))
+		$(addprefix ft_strlen/, $(shell ls ft_strlen | grep '\.c'))\
+		$(addprefix ft_atoi/, $(shell ls ft_atoi | grep '\.c'))
 OBJ = $(SRC:.c=.o)
 COMP = cc -g -Wall -Werror -Wextra
 
