@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   01_sigsegv.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alerusso <alessandro.russo.frc@gmail.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/24 14:44:16 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 15:05:44 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/06/06 14:00:41 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ int	sig_01_segv(void)
 	char	crash;
 	char	*crash2;
 
+	(void)crash;
 	crash2 = (char *)0;
 	crash = *(char *)crash2;
 	return (0);

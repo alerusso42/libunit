@@ -1,5 +1,5 @@
 NAME = libunit.a
-LIBUNIT =  $(addprefix framework/, cleanup.c  error.c  launch_test.c  load_test.c  print_test.c)
+LIBUNIT =  $(addprefix framework/, cleanup.c  error.c  launch_test.c  load_test.c  print_test.c libft_utils.c)
 SRC = $(LIBUNIT)
 OBJ_SRC = $(SRC:.c=.o)
 OBJ = $(OBJ_SRC)
@@ -28,6 +28,10 @@ fclean: clean
 	$(MAKE) fclean -C real-tests
 
 re: fclean all
+
+check_tester:
+	@echo -e $(DIV) $(TABS) "TESTS" $(TABS) "\n" $(DIV)
+	-$(MAKE) test -C tests
 
 test: all
 	@echo -e $(DIV) $(TABS) "TESTS" $(TABS) "\n" $(DIV)
