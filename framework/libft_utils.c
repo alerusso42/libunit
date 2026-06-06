@@ -1,25 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strcmp.c                                        :+:      :+:    :+:   */
+/*   libft_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alerusso <alessandro.russo.frc@gmail.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/23 23:18:30 by tvanni            #+#    #+#             */
-/*   Updated: 2026/05/23 23:20:38 by tvanni           ###   ########.fr       */
+/*   Created: 2026/06/06 13:48:25 by alerusso          #+#    #+#             */
+/*   Updated: 2026/06/06 13:49:48 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int	ft_strcmp(char *s1, char *s2)
-{
-	int	i;
+#include "libunit.h"
 
-	i = 0;
-	while (s1[i])
+#define BASE "0123456789"
+
+void	ft_putnbr(int num)
+{
+	char	*base;
+
+	base = BASE;
+	if (num < 0)
 	{
-		if (s1[i] != s2[i])
-			return (s1[i] - s2[i]);
-		i ++;
+		num = -num;
+		write(1, "-", 1);
 	}
-	return (s1[i] - s2[i]);
+	if (num >= 10)
+	{
+		ft_putnbr(num / 10);
+		ft_putnbr(num % 10);
+	}
+	else
+		write(1, base + num, 1);
 }

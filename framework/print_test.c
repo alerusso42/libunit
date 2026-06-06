@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   print_test.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alerusso <alessandro.russo.frc@gmail.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 16:34:17 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 15:02:37 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/06/06 13:46:59 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ void	print_signals(int sig);
 //[test_function]: [test_name] : [status]
 void	print_test(t_test_node *node, char *func_name)
 {
-	write(1, func_name, ft_strlen(func_name));
+	write(1, func_name, strlen(func_name));
 	write(1, ": ", 2);
-	write(1, node->name, ft_strlen(node->name));
+	write(1, node->name, strlen(node->name));
 	write(1, " : ", 3);
 	if (node->sig == 0)
 	{

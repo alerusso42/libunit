@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libunit.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alerusso <alessandro.russo.frc@gmail.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 18:10:34 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 13:20:11 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/06/06 13:50:28 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,14 @@
 # define LIBUNIT_H
 
 # include <unistd.h>
+# include <string.h>
+# include <fcntl.h>
 # include <stdlib.h>
 # include <signal.h>
+# include <sys/stat.h>
 # include <sys/wait.h>
-# include "../libft/libft.h"
+
+# define LOG_PATH "../log/"
 
 enum	e_status
 {
@@ -34,6 +38,7 @@ struct s_test_list
 	t_test_node	*first;
 	t_test_node	*last;
 	int			status;
+	int			fd;
 };
 
 struct s_test_node
@@ -42,6 +47,7 @@ struct s_test_node
 	char		*name;
 	int			(*test_func)(void);
 	int			sig;
+	int			fd_error;
 	int			status;
 };
 
@@ -50,5 +56,6 @@ void	error(t_test_list *list, char *log);
 int		launch_tests(t_test_list *list, char *func_name);
 void	load_test(t_test_list *list, char *test_type, int (*test)(void));
 void	print_test(t_test_node *node, char *func_name);
+void	ft_putnbr(int num);
 
 #endif

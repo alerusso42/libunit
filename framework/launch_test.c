@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   launch_test.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alerusso <alessandro.russo.frc@gmail.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 16:10:09 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 17:45:11 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/06/06 13:47:24 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,7 @@ void	print_failure(t_test_list *list, t_test_node *curr, int *failed)
 
 	(*failed) += 1;
 	result = 1;
-	write(list->fd, curr->name, ft_strlen(curr->name));
+	write(list->fd, curr->name, strlen(curr->name));
 	write(list->fd, "\n", 1);
 	write(list->fd, "output: ", 8);
 	while (result)

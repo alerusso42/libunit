@@ -1,25 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strcmp.c                                        :+:      :+:    :+:   */
+/*   error.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tvanni <tvanni@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alerusso <alessandro.russo.frc@gmail.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/23 23:18:30 by tvanni            #+#    #+#             */
-/*   Updated: 2026/05/23 23:20:38 by tvanni           ###   ########.fr       */
+/*   Created: 2026/05/23 15:20:42 by alerusso          #+#    #+#             */
+/*   Updated: 2026/06/06 13:52:53 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int	ft_strcmp(char *s1, char *s2)
-{
-	int	i;
+#include "libunit.h"
 
-	i = 0;
-	while (s1[i])
-	{
-		if (s1[i] != s2[i])
-			return (s1[i] - s2[i]);
-		i ++;
-	}
-	return (s1[i] - s2[i]);
+void	error(t_test_list *list, char *log)
+{
+	cleanup(list);
+	write(1, log, strlen(log));
+	exit(1);
 }
