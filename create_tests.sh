@@ -5,6 +5,8 @@
 readonly G_TARGET_DIR="./real-tests"
 readonly G_BACKUP_DIR="./backup"
 readonly G_CONFIG_FILE="./setup_test.ini"
+#@type {Map<module_name, Array<test_name>>}
+declare -A G_MODULES=()
 
 #SECTION - utilities
 
@@ -19,7 +21,7 @@ LIBUNITlog_error()	{ echo -e "\033[1;31m[ERROR]\033[0m $1"; }
 #@param {string} $2:BASH_COMMAND 	last command executed
 LIBUNITcatch_error()
 {
-	LIBUNITlog_error "line $1: '$2'" >&2
+	LIBUNITlog_error "line "$1": '$2'" >&2
 	exit 1
 }
 
@@ -27,7 +29,7 @@ LIBUNITcatch_error()
 #@param {string} $1:message
 LIBUNITerror()
 {
-	LIBUNITlog_error $1 >&2
+	LIBUNITlog_error "$1" >&2
 	exit 1
 }
 
@@ -36,7 +38,7 @@ LIBUNITutils_setup()
 	set -e		#DOC	=> e: exit on errors (check only )
 	set -u		#DOC	=> u:track undefined variables
 	set -E		#DOC	=> E:track functions
-	set -x		#DEBUG	=> x: prints every command run
+	# set -x		#DEBUG	=> x: prints every command run
 	mkdir -p "$G_TARGET_DIR"
 	mkdir -p "$G_BACKUP_DIR"
 	#DOC	=> trap is like UNIX signal with argument handling
@@ -56,6 +58,34 @@ LIBUNITutils_putspace()
 	for ((i = 0; i != $1; i++)); do
 		str="$str "
 	done
+	echo "$str"
+}
+
+#@description creates a string of n spaces
+#@param {string} $1:str		str to trim
+#@param {number} $2:from	starting pos DEFAULT: 0
+#@param {number} $3:to		end pos	DEFAULT: str.length
+#@print {string} trimmed_str
+LIBUNITutils_strtrim()
+{
+	local	str;
+	local	from;
+	local	to;
+
+	set +u	#DOC	=>	deactivates undefined variable check
+	if test "$2" = "";then
+		((from = 0))
+	else
+		((from = "$2"))
+	fi
+	if test "$3" = "";then
+		((to = "${#1}"))
+	else
+		((to = "$3"))
+	fi
+	str="$1"
+	str="${str:$from:$to}"
+	set -u
 	echo "$str"
 }
 
@@ -85,9 +115,39 @@ EOF
 
 LIBUNITconf_parse()
 {
+	local	counter=-1
+	local	mod_name=""
+	local	tests=""
+	local	start=""
+
+	# set -x
 	test -f "$G_CONFIG_FILE" || LIBUNITconf_create
-	#TODO - parsing
+	#DOC	=> read -r: read \ characters as they are
+	#DOC	=> test -n: check if string is nonzero
+	while read -r line || test -n "$line"; do
+		((counter++)) || ((1))
+		start="${line:0:1}"
+		#DOC=> %: trim this at the end
+		#DOC=> why? portability with files that comes from Windows
+		line="${line%$'\r'}"
+		if test "$line" = "" || test $start = ";" || test $start = "["; then
+			continue;
+		elif test -n "$mod_name" && test $start = "#";then
+			LIBUNITerror "conf_parse, line $counter:unclosed module $mod_name"
+		elif test $start = "#";then	#DOC	=> create new test module
+			mod_name=$(LIBUNITutils_strtrim "$line" 1)
+		elif test $start = "]";then	#DOC	=> close current test module
+			G_MODULES["$mod_name"]="$tests"
+			mod_name=""
+			tests=""
+		elif test "$mod_name" = "";then
+			LIBUNITerror "conf_parse, line $counter:undefined module"
+		else	#DOC	=> push to current test array
+			tests="$tests $line"
+		fi
+	done < "$G_CONFIG_FILE"
 	echo "Parse OK!"
+	# set +x
 }
 
 #SECTION - creation
@@ -143,6 +203,9 @@ LIBUNITmain()
 	LIBUNITutils_setup
 	LIBUNITconf_parse
 	LIBUNITcreate_test_template mod test
+	for module in "${!G_MODULES[@]}";do
+		echo "$module:	" ${G_MODULES["$module"]}
+	done
 }
 
 LIBUNITmain "$@"
