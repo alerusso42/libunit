@@ -5,6 +5,7 @@
 readonly G_TARGET_DIR="./real-tests"
 readonly G_BACKUP_DIR="./backup"
 readonly G_CONFIG_FILE="./setup_test.ini"
+readonly G_LAUNCHER_NAME="launcher"
 #@type {Map<module_name, Array<test_name>>}
 declare -A G_MODULES=()
 
@@ -21,7 +22,7 @@ LIBUNITlog_error()	{ echo -e "\033[1;31m[ERROR]\033[0m $1"; }
 #@param {string} $2:BASH_COMMAND 	last command executed
 LIBUNITcatch_error()
 {
-	LIBUNITlog_error "line "$1": '$2'" >&2
+	LIBUNITlog_error "line $1: '$2'" >&2
 	exit 1
 }
 
@@ -52,10 +53,17 @@ LIBUNITutils_setup()
 #@print {string} n_spaces_string
 LIBUNITutils_putspace()
 {
-	local str=""
+	local	str=""
+	local	spaces;
 
-	(($1 < 0)) && $1=0
-	for ((i = 0; i != $1; i++)); do
+	set +u	#DOC	=>	deactivates undefined variable check
+	if (($1 < 0));then
+		spaces="0"
+	else
+		spaces="$1"
+	fi
+	set -u
+	for ((i = 0; i != "$spaces"; i++)); do
 		str="$str "
 	done
 	echo "$str"
@@ -72,7 +80,7 @@ LIBUNITutils_strtrim()
 	local	from;
 	local	to;
 
-	set +u	#DOC	=>	deactivates undefined variable check
+	set +u
 	if test "$2" = "";then
 		((from = 0))
 	else
@@ -83,10 +91,52 @@ LIBUNITutils_strtrim()
 	else
 		((to = "$3"))
 	fi
+	set -u
 	str="$1"
 	str="${str:$from:$to}"
-	set -u
 	echo "$str"
+}
+
+#@description format a filename with xx_testname.c
+#@param {string} $1:testname
+#@param {number} $2:counter
+#@print {string} indexed_testname	xx_testname.c
+LIBUNITutils_index_file()
+{
+	local	testname=$1
+	local	counter=$2
+
+	(($counter < 0)) && counter="0" 
+	(($counter < 10)) && counter="0$counter"
+	echo "$counter""_$testname.c" 
+}
+
+#@description get the full filepath
+#@param {string} $1:testname
+#@param {number} $2:counter
+#@param {string} $3:module
+#@print {string} path	./real_tests/testmod/xx_testname.c
+LIBUNITutils_get_testpath()
+{
+	local	testname
+	local	module=$3
+
+	testname="$(LIBUNITutils_index_file "$1" "$2")"
+	echo "$G_TARGET_DIR/$module/$testname" 
+}
+
+#@description get the full filepath in the backup dir
+#@param {string} $1:testname
+#@param {number} $2:counter
+#@param {string} $3:module
+#@print {string} path	./real_tests/testmod/xx_testname.c
+LIBUNITutils_get_backpath()
+{
+	local	testname
+	local	module=$3
+
+	testname="$(LIBUNITutils_index_file "$1" "$2")"
+	echo "$G_BACKUP_DIR/$module/$testname" 
 }
 
 #SECTION - configuration file
@@ -130,24 +180,79 @@ LIBUNITconf_parse()
 		#DOC=> %: trim this at the end
 		#DOC=> why? portability with files that comes from Windows
 		line="${line%$'\r'}"
-		if test "$line" = "" || test $start = ";" || test $start = "["; then
+		if test "$line" = "" || test "$start" = ";" || test "$start" = "["; then
 			continue;
-		elif test -n "$mod_name" && test $start = "#";then
+		elif test -n "$mod_name" && test "$start" = "#";then
 			LIBUNITerror "conf_parse, line $counter:unclosed module $mod_name"
-		elif test $start = "#";then	#DOC	=> create new test module
+		elif test "$start" = "#";then	#DOC	=> create new test module
 			mod_name=$(LIBUNITutils_strtrim "$line" 1)
-		elif test $start = "]";then	#DOC	=> close current test module
+		elif test "$start" = "]";then	#DOC	=> close current test module
 			G_MODULES["$mod_name"]="$tests"
 			mod_name=""
 			tests=""
 		elif test "$mod_name" = "";then
 			LIBUNITerror "conf_parse, line $counter:undefined module"
+		elif test "$line" = "$G_LAUNCHER_NAME";then
+			LIBUNITerror "conf_parse, line $counter:$G_LAUNCHER_NAME is reserved"
 		else	#DOC	=> push to current test array
 			tests="$tests $line"
 		fi
 	done < "$G_CONFIG_FILE"
 	echo "Parse OK!"
 	# set +x
+}
+
+#SECTION - sync #handles file replace, rename, ecc.
+
+#@description save a file in the backup directory
+#@param {string} $1:testname
+#@param {number} $2:counter
+#@param {string} $3:module
+LIBUNITsync_backup_files()
+{
+	local	path
+	local	backup
+	local	backup_len
+	local	counter
+
+	path="$(LIBUNITutils_get_testpath "$1" "$2" "$3")"
+	test -f "$path" || return ;
+	mkdir -p "$G_BACKUP_DIR/$3"
+	backup="$(LIBUNITutils_get_backpath "$1" "$2" "$3")"
+	counter=1
+	while test -f "$backup";do
+		backup_len="$((("${#backup}" - 2)))"	#DOC	=> trim .c
+		backup="$(LIBUNITutils_strtrim "$backup" "$backup_len")"
+		backup="$backup""_$counter.c"
+	done
+	cp "$path" "$backup"
+}
+
+LIBUNITsync_rename_files()
+{
+	local	real_files=()
+	local	setup_files=()
+	local	counter
+	local	path
+
+	set +u
+	for module in "${!G_MODULES[@]}";do
+		real_files=("$(ls "$G_TARGET_DIR/$module")")
+		setup_files=("${G_MODULES["$module"]}")
+		counter=-1
+		for setup_file in "${setup_files[@]}";do
+			((counter++)) || ((1))
+			for real_file in "${real_files[@]}";do
+				if test "$(echo "$real_file" | grep ".*_$setup_file.c"; echo $?)" = "0";then
+					path="$(LIBUNITutils_get_testpath "$setup_file" "$counter" "$mod_name")"
+					LIBUNITsync_backup_files "$setup_file" "$counter" "$mod_name"
+					cp "$real_file" "$path"
+					rm -f "$real_file"
+				fi
+			done
+		done
+	done
+	set -u
 }
 
 #SECTION - creation
@@ -194,7 +299,23 @@ int	${module}_test_${test_name}(void)
 EOF
 }
 
-#SECTION - sync #handles file replace, rename, ecc.
+LIBUNITcreate_files()
+{
+	local	tests
+	local	path
+	local	counter
+
+	for module in "${!G_MODULES[@]}";do
+		tests="${G_MODULES["$module"]}"
+		counter="0"
+		for test in "${tests[@]}";do
+			((counter++)) || ((1))
+			path="$(LIBUNITutils_get_testpath "$test" "$counter" "$module")"
+			test -f "$path" && LIBUNITsync_backup_files "$test" "$counter" "$module"
+			LIBUNITcreate_test_template "$module" "$test"
+		done
+	done
+}
 
 #SECTION - main
 
@@ -202,9 +323,10 @@ LIBUNITmain()
 {
 	LIBUNITutils_setup
 	LIBUNITconf_parse
-	LIBUNITcreate_test_template mod test
+	# LIBUNITsync_backup_files
+	LIBUNITcreate_files
 	for module in "${!G_MODULES[@]}";do
-		echo "$module:	" ${G_MODULES["$module"]}
+		echo "$module:	" "${G_MODULES["$module"]}"
 	done
 }
 
