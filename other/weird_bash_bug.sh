@@ -31,7 +31,7 @@ LIBUNITerror()
 	exit 1
 }
 
-LIBUNITutils_setup()
+LIBUNITsetup()
 {
 	set -e		#DOC	=> e: exit on errors (check only )
 	set -u		#DOC	=> u:track undefined variables
@@ -45,26 +45,12 @@ LIBUNITutils_setup()
 	trap 'LIBUNITcatch_error ${LINENO} "${BASH_COMMAND}"' ERR 
 }
 
-#@description creates a string of n spaces
-#@param {number} $1:spaces	number of spaces
-#@print {string} n_spaces_string
-LIBUNITutils_putspace()
-{
-	local str=""
-
-	(($1 < 0)) && $1=0
-	for ((i = 0; i != $1; i++)); do
-		str="$str "
-	done
-	echo "$str"
-}
-
 #SECTION - configuration file
 
 LIBUNITconf_create()
 {
 	touch "$G_CONFIG_FILE"
-	cat > "$G_CONFIG_FILE" << EOF
+	cat << EOF
 #module1
 [
 	basic
@@ -79,8 +65,8 @@ LIBUNITconf_create()
 	null
 ]
 
-EOF
-	LIBUNITerror "Please edit the file $G_CONFIG_FILE and try again."
+EOF > "$G_CONFIG_FILE"
+	LIBUNITlog_error "Please edit the file $G_CONFIG_FILE and try again."
 }
 
 LIBUNITconf_parse()
@@ -98,38 +84,25 @@ LIBUNITconf_parse()
 LIBUNITcreate_test_template()
 {
 	local module=$1
-	local test_name="$2"
-	local test_file="$2.c"
-	local sp0=$((51 - ${#test_file}))
-	local sp1=$((26 - (${#USER} * 2)))
-	local sp2=$((20 - ${#USER}))
-	local sp3=$((17 - ${#USER}))
-	sp0=$(LIBUNITutils_putspace $sp0)
-	sp1=$(LIBUNITutils_putspace $sp1)
-	sp2=$(LIBUNITutils_putspace $sp2)
-	sp3=$(LIBUNITutils_putspace $sp3)
-	echo "$sp1"
-	echo "$sp2"
-	echo "$sp3"
-	mkdir -p "$G_TARGET_DIR/$module/"
-    cat > "$G_TARGET_DIR/$module/01_$test_file" << EOF
+	local test_name=$2
+    cat << EOF
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ${test_file}$sp0:+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: $USER <$USER@student.42.fr>$sp1+#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: $(date +'%Y/%m/%d %H:%M:%S') by $USER$sp2#+#    #+#           */
-/*   Updated: $(date +'%Y/%m/%d %H:%M:%S') by $USER$sp3###   ########.fr       */
-/*                                                                            */
+/* */
+/* :::      ::::::::   */
+/* ${test_name}.c                                     :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
+/* Created: $(date +'%Y/%m/%d %H:%M:%S') by alerusso          #+#    #+#             */
+/* Updated: $(date +'%Y/%m/%d %H:%M:%S') by alerusso         ###   ########.fr       */
+/* */
 /* ************************************************************************** */
 
 #include "../tests.h"
 
 int	${module}_test_${test_name}(void)
 {
-	return (-(${module}() != 0 ));
+	return (-( ${module}("test") != 0 )); // TODO: Implementa il test reale
 }
 EOF
 }
@@ -140,9 +113,17 @@ EOF
 
 LIBUNITmain()
 {
-	LIBUNITutils_setup
 	LIBUNITconf_parse
-	LIBUNITcreate_test_template mod test
+	exit 1
+	LIBUNITsetup
+	LIBUNITcreate_test_template
 }
 
 LIBUNITmain "$@"
+
+#FIXME - dopo ore di debug:
+#linea 68 deve diventare da:
+#68 - EOF > "$G_CONFIG_FILE"
+#a:
+#68 - EOF
+#69 -  > "$G_CONFIG_FILE"
