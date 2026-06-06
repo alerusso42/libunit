@@ -308,10 +308,11 @@ LIBUNITcreate_files()
 	for module in "${!G_MODULES[@]}";do
 		tests="${G_MODULES["$module"]}"
 		counter="0"
-		for test in "${tests[@]}";do
+		for test in $tests;do
 			((counter++)) || ((1))
 			path="$(LIBUNITutils_get_testpath "$test" "$counter" "$module")"
 			test -f "$path" && LIBUNITsync_backup_files "$test" "$counter" "$module"
+			set +x
 			LIBUNITcreate_test_template "$module" "$test"
 		done
 	done
