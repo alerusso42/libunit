@@ -6,6 +6,7 @@ readonly G_TARGET_DIR="./real-tests"
 readonly G_BACKUP_DIR="./backup"
 readonly G_CONFIG_FILE="./setup_test.ini"
 readonly G_LAUNCHER_NAME="launcher"
+export USER="alerusso"
 #@type {Map<module_name, Array<test_name>>}
 declare -A G_MODULES=()
 
@@ -46,6 +47,9 @@ LIBUNITutils_setup()
 	#DOC	=> LINENO:last executed line in script
 	#DOC	=> BASH_COMMAND: last command executed
 	trap 'LIBUNITcatch_error ${LINENO} "${BASH_COMMAND}"' ERR 
+	if test "$USER" = "" || test "$USER" = "codespace";then
+		LIBUNITerror "Variable HOST unset. Set it at the top of this script"
+	fi
 }
 
 #@description creates a string of n spaces
@@ -304,34 +308,17 @@ LIBUNITsync_rename_files()
 LIBUNITcreate_test_template()
 {
 	local test_name="$1"
-	local test_file="$2""_$1.c"
 	local counter=$(LIBUNITutils_index_number $2)
+	local test_file="$counter""_$1.c"
 	local module="$3"
-	local proto="int	$module""253_$counter""_$test_name(void)"
+	local proto="int	$module""_$counter""_$test_name(void)"
 	local path="$(LIBUNITutils_get_testpath "$1" $2 "$3")"
-	local sp0=$((51 - ${#test_file}))
-	local sp1=$((26 - (${#USER} * 2)))
-	local sp2=$((20 - ${#USER}))
-	local sp3=$((17 - ${#USER}))
+	local header="$(LIBUNITutils_42header "$test_file")"
 
 	test -f "$path" && return ; 
-	sp0=$(LIBUNITutils_putspace $sp0)
-	sp1=$(LIBUNITutils_putspace $sp1)
-	sp2=$(LIBUNITutils_putspace $sp2)
-	sp3=$(LIBUNITutils_putspace $sp3)
 	mkdir -p "$G_TARGET_DIR/$module/"
     cat > "$path" << EOF
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ${test_file}$sp0:+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: $USER <$USER@student.42.fr>$sp1+#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: $(date +'%Y/%m/%d %H:%M:%S') by $USER$sp2#+#    #+#           */
-/*   Updated: $(date +'%Y/%m/%d %H:%M:%S') by $USER$sp3###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+${header}
 
 #include "../tests.h"
 
