@@ -148,6 +148,36 @@ LIBUNITutils_get_backpath()
 	echo "$G_BACKUP_DIR/$module/$testname" 
 }
 
+#@description gives back a string with 42 header
+#@param {string} filename
+#@print {string} 42header
+LIBUNITutils_42header()
+{
+	local test_file="$1"
+	local sp0=$((51 - ${#test_file}))
+	local sp1=$((26 - (${#USER} * 2)))
+	local sp2=$((20 - ${#USER}))
+	local sp3=$((17 - ${#USER}))
+
+	sp0=$(LIBUNITutils_putspace $sp0)
+	sp1=$(LIBUNITutils_putspace $sp1)
+	sp2=$(LIBUNITutils_putspace $sp2)
+	sp3=$(LIBUNITutils_putspace $sp3)
+	cat << EOF
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ${test_file}$sp0:+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: $USER <$USER@student.42.fr>$sp1+#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: $(date +'%Y/%m/%d %H:%M:%S') by $USER$sp2#+#    #+#           */
+/*   Updated: $(date +'%Y/%m/%d %H:%M:%S') by $USER$sp3###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+EOF
+}
+
 #SECTION - configuration file
 
 LIBUNITconf_create()
