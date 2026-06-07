@@ -39,7 +39,7 @@ LIBUNITutils_setup()
 	set -e		#DOC	=> e: exit on errors (check only )
 	set -u		#DOC	=> u:track undefined variables
 	set -E		#DOC	=> E:track functions
-	# set -x		#DEBUG	=> x: prints every command run
+	#set -x		#DEBUG	=> x: prints every command run
 	mkdir -p "$G_TARGET_DIR"
 	mkdir -p "$G_BACKUP_DIR"
 	#DOC	=> trap is like UNIX signal with argument handling
@@ -97,6 +97,18 @@ LIBUNITutils_strtrim()
 	echo "$str"
 }
 
+#@description index a number, adding trailing 0 if needed
+#@param {number} $1:counter
+#@print {string} indexed_number	0=>00; 7=>07; 42=>42
+LIBUNITutils_index_number()
+{
+	local	counter=$1
+
+	(($counter < 0)) && counter="0"
+	(($counter < 10)) && counter="0$counter"
+	echo "$counter"
+}
+
 #@description format a filename with xx_testname.c
 #@param {string} $1:testname
 #@param {number} $2:counter
@@ -104,11 +116,8 @@ LIBUNITutils_strtrim()
 LIBUNITutils_index_file()
 {
 	local	testname=$1
-	local	counter=$2
 
-	(($counter < 0)) && counter="0" 
-	(($counter < 10)) && counter="0$counter"
-	echo "$counter""_$testname.c" 
+	echo "$(LIBUNITutils_index_number $2)""_$testname.c" 
 }
 
 #@description get the full filepath
@@ -223,7 +232,8 @@ LIBUNITsync_backup_files()
 	while test -f "$backup";do
 		backup_len="$((("${#backup}" - 2)))"	#DOC	=> trim .c
 		backup="$(LIBUNITutils_strtrim "$backup" "$backup_len")"
-		backup="$backup""_$counter.c"
+		backup="$G_BACKUP_DIR/$backup""_$counter.c"
+		((++counter))
 	done
 	cp "$path" "$backup"
 }
@@ -258,26 +268,29 @@ LIBUNITsync_rename_files()
 #SECTION - creation
 
 #@description generates a template for the test
-#@param {string} $1:module 		name of the module
-#@param {string} $2:test_name 	name of the test
+#@param {string} $1:testname
+#@param {number} $2:counter
+#@param {string} $3:module
 LIBUNITcreate_test_template()
 {
-	local module=$1
-	local test_name="$2"
-	local test_file="$2.c"
+	local test_name="$1"
+	local test_file="$2""_$1.c"
+	local counter=$(LIBUNITutils_index_number $2)
+	local module="$3"
+	local proto="int	$module""253_$counter""_$test_name(void)"
+	local path="$(LIBUNITutils_get_testpath "$1" $2 "$3")"
 	local sp0=$((51 - ${#test_file}))
 	local sp1=$((26 - (${#USER} * 2)))
 	local sp2=$((20 - ${#USER}))
 	local sp3=$((17 - ${#USER}))
+
+	test -f "$path" && return ; 
 	sp0=$(LIBUNITutils_putspace $sp0)
 	sp1=$(LIBUNITutils_putspace $sp1)
 	sp2=$(LIBUNITutils_putspace $sp2)
 	sp3=$(LIBUNITutils_putspace $sp3)
-	echo "$sp1"
-	echo "$sp2"
-	echo "$sp3"
 	mkdir -p "$G_TARGET_DIR/$module/"
-    cat > "$G_TARGET_DIR/$module/01_$test_file" << EOF
+    cat > "$path" << EOF
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -292,9 +305,9 @@ LIBUNITcreate_test_template()
 
 #include "../tests.h"
 
-int	${module}_test_${test_name}(void)
+${proto}
 {
-	return (-(${module}() != 0 ));
+	return (-(${module}() != 0));
 }
 EOF
 }
@@ -312,8 +325,7 @@ LIBUNITcreate_files()
 			((counter++)) || ((1))
 			path="$(LIBUNITutils_get_testpath "$test" "$counter" "$module")"
 			test -f "$path" && LIBUNITsync_backup_files "$test" "$counter" "$module"
-			set +x
-			LIBUNITcreate_test_template "$module" "$test"
+			LIBUNITcreate_test_template "$test" "$counter" "$module"
 		done
 	done
 }

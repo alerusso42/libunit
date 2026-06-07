@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test.c                                             :+:      :+:    :+:   */
+/*   2_other.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/06 21:43:11 by alerusso            #+#    #+#           */
-/*   Updated: 2026/06/06 21:43:11 by alerusso         ###   ########.fr       */
+/*   Created: 2026/06/07 11:31:01 by codespace           #+#    #+#           */
+/*   Updated: 2026/06/07 11:31:01 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
 
-int	mod_test_test(void)
+int	module1_02_other(void)
 {
-	return (-(mod() != 0 ));
+	return (-(module1() != 0 ));
 }
