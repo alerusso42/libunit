@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tests.h                                            :+:      :+:    :+:   */
+/*   00_launcher.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,19 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef TESTS_H
-# define TESTS_H
+#include "../tests.h"
 
-# include "../framework/libunit.h"
+int	module2_launcher(void)
+{
+	t_test_list	list;
 
-//SECTION - module2
-int	module2_01_basic(void);
-int	module2_02_other(void);
-int	module2_03_null(void);
-int	module2_04_testing(void);
-//SECTION - module1
-int	module1_01_basic(void);
-int	module1_02_other(void);
-int	module1_03_null(void);
-
-#endif
+	list = (t_test_list){0};
+	load_test(&list, "basic", module2_01_basic);
+	load_test(&list, "other", module2_02_other);
+	load_test(&list, "null", module2_03_null);
+	load_test(&list, "testing", module2_04_testing);
+	return (launch_tests(&list, "MODULE2"));
+}

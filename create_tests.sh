@@ -6,6 +6,9 @@ readonly G_TARGET_DIR="./real-tests"
 readonly G_BACKUP_DIR="./backup"
 readonly G_CONFIG_FILE="./setup_test.ini"
 readonly G_MAKEFILE="$G_TARGET_DIR/Makefile"
+readonly G_HEADER_NAME="tests.h"
+readonly G_HEADER="$G_TARGET_DIR/$G_HEADER_NAME"
+readonly G_MAIN="$G_TARGET_DIR/main.c"
 readonly G_LAUNCHER_NAME="launcher"
 export USER="alerusso"
 #@type {Map<module_name, Array<test_name>>}
@@ -183,6 +186,117 @@ LIBUNITutils_42header()
 EOF
 }
 
+#@description run a function for every test. First arg is counter
+#@param {function} filename
+#@print {...} args
+LIBUNITutils_foreach_test()
+{
+	local	func
+	local	counter
+	local	counter_indexed
+	local	ret
+
+	func="$1"
+	ret=""
+	for module in "${!G_MODULES[@]}";do
+		tests="${G_MODULES["$module"]}"
+		counter=0
+		for test in $tests;do
+			((counter++)) || ((1))
+			counter_indexed="$(LIBUNITutils_index_number $counter)"
+			"$func" "$counter_indexed" "$module" "$test"
+		done
+	done
+	echo "$ret"
+}
+
+#@description run a function for every test. First arg is counter
+#@param {function} filename
+#@print {...} args
+LIBUNITutils_foreach_module()
+{
+	local	func
+	local	counter
+	local	counter_indexed
+	local	ret
+
+	func="$1"
+	ret=""
+	counter=0
+	for module in "${!G_MODULES[@]}";do
+		((counter++)) || ((1))
+		tests="${G_MODULES["$module"]}"
+		counter_indexed="$(LIBUNITutils_index_number $counter)"
+		"$func" "$counter_indexed" "$module"
+	done
+	echo "$ret"
+}
+
+#SECTION - format output
+
+#@param {number} counter
+#@param {string} module
+#@param {string} test
+#@print {...} int	modulename_testname(void);
+LIBUNITformat_header()
+{
+	if test "$1" = "01";then
+		echo "//SECTION - $2"
+	fi
+	echo "int	${2}_${1}_${3}(void);"
+}
+
+#@param {number} counter
+#@param {string} module
+#@param {string} test
+#@print {...} int	modulename_testname(void);
+LIBUNITformat_main()
+{
+	local	module="$2"
+
+	echo "	output -= ${module}_launcher();"
+}
+
+LIBUNITformat_launcher()
+{
+	local	filepath
+	local	header42
+	local	files
+	local	tests
+	local	counter
+	local	counter_indexed
+	local	module
+	local	module_upper
+
+	module="$2"
+	module_upper="${module^^}"
+	filepath="$(LIBUNITutils_get_testpath launcher "0" "$module")"
+	header42="$(LIBUNITutils_42header "00_launcher.c")"
+	tests="${G_MODULES["$module"]}"
+	counter=0
+	files=""
+	for test in $tests;do
+		((counter++)) || ((1))
+		counter_indexed="$(LIBUNITutils_index_number $counter)"
+		files="$files""
+	load_test(&list, \"${test}\", ${module}_${counter_indexed}_${test});"
+
+	done
+	cat > "$filepath" << EOF
+${header42}
+
+#include "../tests.h"
+
+int	${module}_launcher(void)
+{
+	t_test_list	list;
+
+	list = (t_test_list){0};${files}
+	return (launch_tests(&list, "${module_upper}"));
+}
+EOF
+}
+
 #SECTION - configuration file
 
 LIBUNITconf_create()
@@ -351,6 +465,7 @@ LIBUNITcreate_files()
 LIBUNITcreate_makefile()
 {
 	local	files
+	local	tests
 
 	files="SRC = main.c"
 	for module in "${!G_MODULES[@]}";do
@@ -395,6 +510,61 @@ val: all
 EOF
 }
 
+LIBUNITcreate_header()
+{
+	local	header42
+	local	files
+
+	header42="$(LIBUNITutils_42header $G_HEADER_NAME)"
+	files="$(LIBUNITutils_foreach_test LIBUNITformat_header)"
+	echo "$files"
+	cat > "$G_HEADER" << EOF
+${header42}
+
+#ifndef TESTS_H
+# define TESTS_H
+
+# include "../framework/libunit.h"
+
+${files}
+
+#endif
+EOF
+}
+
+LIBUNITcreate_main()
+{
+	local	header42
+	local	files
+
+	header42="$(LIBUNITutils_42header $G_HEADER_NAME)"
+	files="$(LIBUNITutils_foreach_module LIBUNITformat_main)"
+	cat > "$G_MAIN" << EOF
+${header42}
+
+#include "tests.h"
+
+int	main(void)
+{
+	int	output;
+
+	output = 0;
+${files}
+	if (output == 0)
+		write(1, "\033[1;32mTEST OK.\n\033[0m", 18);
+	else
+		write(1, "\033[1;31mTEST KO.\n\033[0m", 18);
+	return (-(output != 0));
+}
+
+EOF
+}
+
+LIBUNITcreate_launcher()
+{
+	LIBUNITutils_foreach_module LIBUNITformat_launcher
+}
+
 #SECTION - main
 
 LIBUNITmain()
@@ -404,6 +574,9 @@ LIBUNITmain()
 	# LIBUNITsync_backup_files
 	LIBUNITcreate_files
 	LIBUNITcreate_makefile
+	LIBUNITcreate_header
+	LIBUNITcreate_main
+	LIBUNITcreate_launcher
 	for module in "${!G_MODULES[@]}";do
 		echo "$module:	" "${G_MODULES["$module"]}"
 	done
