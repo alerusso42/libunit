@@ -5,6 +5,7 @@
 readonly G_TARGET_DIR="./real-tests"
 readonly G_BACKUP_DIR="./backup"
 readonly G_CONFIG_FILE="./setup_test.ini"
+readonly G_MAKEFILE="$G_TARGET_DIR/Makefile"
 readonly G_LAUNCHER_NAME="launcher"
 export USER="alerusso"
 #@type {Map<module_name, Array<test_name>>}
@@ -347,6 +348,53 @@ LIBUNITcreate_files()
 	done
 }
 
+LIBUNITcreate_makefile()
+{
+	local	files
+
+	files="SRC = main.c"
+	for module in "${!G_MODULES[@]}";do
+		files="$files"'\
+	$(addprefix '"$module"'/, $(shell ls '"$module"' | grep '\''\.c'\''))'
+	done
+	cat > "$G_MAKEFILE" << EOF
+${files}
+NAME = test.out
+LIBUNIT = ../libunit.a
+OBJ = \$(SRC:.c=.o)
+COMP = cc -g -Wall -Werror -Wextra
+
+all: \$(NAME)
+	
+\$(NAME) : \$(LIBUNIT) \$(OBJ) 
+	echo \$(SRC)
+	\$(COMP) \$(OBJ) \$(LIBUNIT) -o \$(NAME)
+
+\$(LIBUNIT):
+	\$(MAKE) -C ../
+
+%.o: %.c
+	\$(COMP) -c \$< -o \$@
+
+clean: 
+	rm -f \$(OBJ) \$(OBJ_BONUS) *.out
+
+fclean: clean
+	rm -f \$(NAME)
+
+re: fclean all
+
+test: all
+	./\$(NAME)
+
+val: all
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --child-silent-after-fork=yes --trace-children=no --track-fds=yes  -s ./\$(NAME)
+
+.PHONY: all clean fclean re test
+.SILENT:
+EOF
+}
+
 #SECTION - main
 
 LIBUNITmain()
@@ -355,6 +403,7 @@ LIBUNITmain()
 	LIBUNITconf_parse
 	# LIBUNITsync_backup_files
 	LIBUNITcreate_files
+	LIBUNITcreate_makefile
 	for module in "${!G_MODULES[@]}";do
 		echo "$module:	" "${G_MODULES["$module"]}"
 	done

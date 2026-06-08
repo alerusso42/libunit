@@ -1,8 +1,8 @@
+SRC = main.c\
+	$(addprefix module2/, $(shell ls module2 | grep '\.c'))\
+	$(addprefix module1/, $(shell ls module1 | grep '\.c'))
 NAME = test.out
 LIBUNIT = ../libunit.a
-SRC = main.c \
-		$(addprefix ft_strlen/, $(shell ls ft_strlen | grep '\.c'))\
-		$(addprefix ft_atoi/, $(shell ls ft_atoi | grep '\.c'))
 OBJ = $(SRC:.c=.o)
 COMP = cc -g -Wall -Werror -Wextra
 
