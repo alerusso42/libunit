@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   basic.c                                            :+:      :+:    :+:   */
+/*   01_basic.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/07 00:08:04 by alerusso            #+#    #+#           */
-/*   Updated: 2026/06/07 00:08:04 by alerusso         ###   ########.fr       */
+/*   Created: 2026/06/07 15:12:20 by codespace           #+#    #+#           */
+/*   Updated: 2026/06/07 15:12:20 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
 
-int	module1_test_basic(void)
+int	module1_01_basic(void)
 {
-	return (-(module1() != 0 ));
+	return (-(module1() != 0));
 }
