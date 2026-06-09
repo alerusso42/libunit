@@ -1,6 +1,7 @@
 SRC = main.c\
 	$(addprefix module2/, $(shell ls module2 | grep '\.c'))\
-	$(addprefix module1/, $(shell ls module1 | grep '\.c'))
+	$(addprefix module1/, $(shell ls module1 | grep '\.c'))\
+	$(addprefix ft_printf/, $(shell ls ft_printf | grep '\.c'))
 NAME = test.out
 LIBUNIT = ../libunit.a
 OBJ = $(SRC:.c=.o)

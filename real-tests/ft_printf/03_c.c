@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   00_launcher.c                                      :+:      :+:    :+:   */
+/*   03_c.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,14 +12,13 @@
 
 #include "../tests.h"
 
-int	module2_launcher(void)
+int	ft_printf_03_c(void)
 {
-	t_test_list	list;
+	int		size;
+	char	str[] = "";
 
-	list = (t_test_list){0};
-	load_test(&list, "basic", module2_01_basic);
-	load_test(&list, "other", module2_02_other);
-	load_test(&list, "null", module2_03_null);
-	load_test(&list, "testing", module2_04_testing);
-	return (launch_tests(&list, "MODULE2"));
+	size = ft_printf("");
+	if (size != strlen(str))
+		return (-1);
+	return (0);
 }
