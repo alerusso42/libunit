@@ -19,6 +19,9 @@ declare -A G_LOGS=()
 #conf global variables
 G_CONF_LOG="false"
 G_CONF_TEMPLATE="false"
+G_CONF_PROTO="false"
+G_CONF_FUNCTION="false"
+G_CONF_STDERR="false"
 
 #SECTION - utilities
 
@@ -346,6 +349,67 @@ int	${module}_launcher(void)
 EOF
 }
 
+#FIXME - this should be on create part
+
+#@description create a template according to @ flags
+#@param {string} module 
+LIBUNITcreate_output_template()
+{
+	local	path
+	local	module=$1
+	local	template
+	local	func_name="$module"
+	local	stderr_prefix=""
+	local	stderr_suffix=""
+	local	log_prefix=""
+	local	log_suffix=""
+
+	path="$G_TARGET_DIR/$module/$G_TEMPLATE_NAME"
+	if test -f "$path";then
+		return ;
+	fi
+	if test "$G_CONF_FUNCTION" != "false";then
+		func_name="$G_CONF_FUNCTION"
+	fi
+	touch "$path"
+	if test "$G_CONF_LOG" = "true" || test "$G_CONF_STDERR" = "true";then
+		if test "$G_CONF_STDERR" = "true";then
+			stderr_prefix="	child_redirect(&data, 2);
+"
+			stderr_suffix="	if (child_cmp(&data, LIBUNIT_FLAGS_EXIST, child_release(&data, 2)) == 1)
+		return (-1);
+"
+
+		fi
+		if test "$G_CONF_LOG" = "true";then
+			log_prefix="	child_redirect(&data, 1);
+"
+			log_suffix="	if (child_cmp(&data, LIBUNIT_FLAGS_ZERO, child_release(&data, 1)) == 1)
+		return (-1);
+"
+
+		fi
+		template="$(cat << EOF
+	char			module[LIBUNIT_BUFFER];
+	char			name[LIBUNIT_BUFFER];
+	t_libunit_child	data;
+	int				counter;
+
+	strcpy(module, "${module}");
+	strcpy(name, "\$test");
+	counter = \$counter;
+	data = child_init(module, name, counter);
+${log_prefix}${stderr_prefix}	if (${func_name}() != 0)
+		return (-1);
+${log_suffix}${stderr_suffix}	return (0);
+EOF
+)"
+	echo "$template" > "$path"
+	else
+		echo "	return (-(\$func_name() != 0));" > "$path"
+	fi
+}
+
 #SECTION - configuration file
 
 LIBUNITconf_create()
@@ -428,13 +492,15 @@ LIBUNITconf_parse()
 			mod_name=$(LIBUNITutils_strtrim "$line" 1)
 			mkdir -p "$G_TARGET_DIR/$mod_name/"
 			if test "$G_CONF_TEMPLATE" = "true";then
-				touch "$G_TARGET_DIR/$mod_name/$G_TEMPLATE_NAME"
+				LIBUNITcreate_output_template "$mod_name"
 			fi	
 		elif test "$start" = "]";then	#DOC	=> close current test module
 			G_MODULES["$mod_name"]="$tests"
 			mod_name=""
 			tests=""
 			test_counter=0
+			G_CONF_FUNCTION="false"
+			G_CONF_PROTO="false"
 		elif test "$mod_name" = "";then
 			LIBUNITerror "conf_parse, line $counter:undefined module"
 		elif test "$line" = "$G_LAUNCHER_NAME";then
@@ -509,26 +575,31 @@ LIBUNITsync_rename_files()
 #SECTION - creation
 
 #@description generates a template for the test
-#@param {string} $1:testname
+#@param {string} $1:test
 #@param {number} $2:counter
 #@param {string} $3:module
 LIBUNITcreate_test_template()
 {
-	local test_name="$1"
+	local test="$1"
 	local counter=$(LIBUNITutils_index_number $2)
 	local test_file="$counter""_$1.c"
 	local module="$3"
-	local proto="int	$module""_$counter""_$test_name(void)"
+	local proto="int	$module""_$counter""_$test(void)"
 	local path="$(LIBUNITutils_get_testpath "$1" $2 "$3")"
 	local header="$(LIBUNITutils_42header "$test_file")"
 	local template="	return (-(${module}() != 0));"
 
 	test -f "$path" && return ; 
 	mkdir -p "$G_TARGET_DIR/$module/"
-	if test -f "$G_TARGET_DIR/$module/$G_TEMPLATE_NAME";then
-		template="$(cat $G_TARGET_DIR/$module/$G_TEMPLATE_NAME)"
+	#DOC	=>s:exist and is non empty
+	if test -s "$G_TARGET_DIR/$module/$G_TEMPLATE_NAME";then
+		export counter="$counter"
+		export test="$test"
+		template="$(envsubst < $G_TARGET_DIR/$module/$G_TEMPLATE_NAME)"
+		unset counter
+		unset test
 	fi
-    cat > "$path" << EOF
+	cat > "$path" << EOF
 ${header}
 
 #include "../tests.h"
