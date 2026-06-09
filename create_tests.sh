@@ -13,6 +13,10 @@ readonly G_LAUNCHER_NAME="launcher"
 export USER="alerusso"
 #@type {Map<module_name, Array<test_name>>}
 declare -A G_MODULES=()
+#@type {Array<logPath>>}
+declare -A G_LOGS=()
+#conf global variables
+G_CONF_LOG="false"
 
 #SECTION - utilities
 
@@ -88,33 +92,76 @@ LIBUNITutils_strtrim()
 	local	from;
 	local	to;
 
+	str="$1"
 	set +u
 	if test "$2" = "";then
-		((from = 0))
+		from="0"
 	else
-		((from = "$2"))
+		from="$2"
 	fi
 	if test "$3" = "";then
-		((to = "${#1}"))
+		to="${#str}"
 	else
-		((to = "$3"))
+		to="$3"
 	fi
 	set -u
-	str="$1"
 	str="${str:$from:$to}"
 	echo "$str"
 }
 
-#@description index a number, adding trailing 0 if needed
+#@description returns first index of
+#@param {string} $1:haystack	big string
+#@param {string} $2:needle		little string
+#@print {number} -1 for not found, else index
+LIBUNITutils_index_of()
+{
+	local	str
+
+	if [[ "$1" != *"$2"* ]] ;then
+		echo "-1";
+		return ;
+	fi
+	str="${1%%"$2"*}"
+	echo "${#str}"
+}
+
+#@description split a string into spaces
+#@param {string} $1:src
+#@param {string} $2:sep
+#@print {number} src with spaces instead of sep
+LIBUNITutils_split()
+{
+	local	i
+	local	i_next
+	local	tmp
+	local	src
+	local	sep
+
+	src="$1"
+	sep="$2"
+	i="$(LIBUNITutils_index_of "$src" "$sep")"
+	while test "$i" != "-1";do
+		tmp="$(LIBUNITutils_strtrim "$src" "0" "$i")"
+		i_next=$((i + 1))
+		src="$(LIBUNITutils_strtrim "$src" $i_next)"
+		echo -n "$tmp "
+		i="$(LIBUNITutils_index_of "$src" "$sep")"
+	done
+	echo -n "$src"
+}
+
+#@description format number so that one digit number gets a 0 prefix
 #@param {number} $1:counter
-#@print {string} indexed_number	0=>00; 7=>07; 42=>42
+#@print {string} indexed_counter	0=>	00;	8=>	08;	12=> 12
 LIBUNITutils_index_number()
 {
-	local	counter=$1
+	local	counter="$1"
 
-	(($counter < 0)) && counter="0"
-	(($counter < 10)) && counter="0$counter"
-	echo "$counter"
+	if test "${#counter}" = "1";then
+		echo "0$counter"
+	else
+		echo "$counter"
+	fi 
 }
 
 #@description format a filename with xx_testname.c
@@ -125,7 +172,7 @@ LIBUNITutils_index_file()
 {
 	local	testname=$1
 
-	echo "$(LIBUNITutils_index_number $2)""_$testname.c" 
+	echo "$(LIBUNITutils_index_number "$2")""_$testname.c" 
 }
 
 #@description get the full filepath
@@ -321,9 +368,37 @@ EOF
 	LIBUNITerror "Please edit the file $G_CONFIG_FILE and try again."
 }
 
+#@description modify creation behaviour (read README.md)
+#@param {number} counter
+#@param {string} name:state
+LIBUNITconf_params()
+{
+	local	args
+	local	param
+	local	state
+	local	counter
+
+	set +u
+	counter=$1
+	args=($(LIBUNITutils_split "$2" ":"))
+	param="G_CONF_${args[0]^^}"
+	state="${args[1]}"
+	if test -z "$param";then
+		LIBUNITerror "conf_parse, line $counter:missing param $param"
+	elif test -z "${!param}";then	#DOC =>	"${!param}": expand a variable twice
+		LIBUNITerror "conf_parse, line $counter:invalid param $param"
+	elif test -z "$state";then
+		LIBUNITerror "conf_parse, line $counter:missing statement after :"
+	fi
+	declare	-g "$param"="$state"
+	set -u
+}
+
 LIBUNITconf_parse()
 {
-	local	counter=-1
+	local	counter=0
+	local	test_counter=0
+	local	test_counter_indexed=""
 	local	mod_name=""
 	local	tests=""
 	local	start=""
@@ -342,18 +417,30 @@ LIBUNITconf_parse()
 			continue;
 		elif test -n "$mod_name" && test "$start" = "#";then
 			LIBUNITerror "conf_parse, line $counter:unclosed module $mod_name"
+		elif test -n "$mod_name" && test "$start" = "@";then
+			LIBUNITerror "conf_parse, line $counter:@ must be outside modules"
+		elif test "$start" = "@";then
+			line="$(LIBUNITutils_strtrim "$line" "1")"
+			LIBUNITconf_params "$counter" "$line"
 		elif test "$start" = "#";then	#DOC	=> create new test module
 			mod_name=$(LIBUNITutils_strtrim "$line" 1)
 		elif test "$start" = "]";then	#DOC	=> close current test module
 			G_MODULES["$mod_name"]="$tests"
 			mod_name=""
 			tests=""
+			test_counter=0
 		elif test "$mod_name" = "";then
 			LIBUNITerror "conf_parse, line $counter:undefined module"
 		elif test "$line" = "$G_LAUNCHER_NAME";then
 			LIBUNITerror "conf_parse, line $counter:$G_LAUNCHER_NAME is reserved"
 		else	#DOC	=> push to current test array
+			((test_counter++)) || ((1))
 			tests="$tests $line"
+			if test "$G_CONF_LOG" = "true";then
+				test_counter_indexed="$(LIBUNITutils_index_number "$test_counter")"
+				mkdir -p "$G_TARGET_DIR/$mod_name/"
+				touch "$G_TARGET_DIR/$mod_name/${test_counter_indexed}.log"
+			fi
 		fi
 	done < "$G_CONFIG_FILE"
 	echo "Parse OK!"
@@ -517,7 +604,6 @@ LIBUNITcreate_header()
 
 	header42="$(LIBUNITutils_42header $G_HEADER_NAME)"
 	files="$(LIBUNITutils_foreach_test LIBUNITformat_header)"
-	echo "$files"
 	cat > "$G_HEADER" << EOF
 ${header42}
 
@@ -556,7 +642,6 @@ ${files}
 		write(1, "\033[1;31mTEST KO.\n\033[0m", 18);
 	return (-(output != 0));
 }
-
 EOF
 }
 
