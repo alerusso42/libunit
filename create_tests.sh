@@ -11,9 +11,12 @@ readonly G_HEADER="$G_TARGET_DIR/$G_HEADER_NAME"
 readonly G_MAIN="$G_TARGET_DIR/main.c"
 readonly G_LAUNCHER_NAME="launcher"
 readonly G_TEMPLATE_NAME="template"
+readonly G_EXPECTED_OUTPUT="0"
 export USER="alerusso"
 #@type {Map<module_name, Array<test_name>>}
 declare -A G_MODULES=()
+#@type {Map<module_name, proto_name}
+declare -A G_PROTOS=()
 #@type {Array<logPath>>}
 declare -A G_LOGS=()
 #conf global variables
@@ -292,10 +295,15 @@ LIBUNITutils_foreach_module()
 #@print {...} int	modulename_testname(void);
 LIBUNITformat_header()
 {
+	set +u
 	if test "$1" = "01";then
 		echo "//SECTION - $2"
+		if test "${G_PROTOS["$2"]}" != "";then
+			echo "${G_PROTOS["$2"]};"
+		fi
 	fi
 	echo "int	${2}_${1}_${3}(void);"
+	set -u
 }
 
 #@param {number} counter
@@ -392,21 +400,21 @@ LIBUNITcreate_output_template()
 		template="$(cat << EOF
 	char			module[LIBUNIT_BUFFER];
 	char			name[LIBUNIT_BUFFER];
+	char			counter[LIBUNIT_BUFFER];
 	t_libunit_child	data;
-	int				counter;
 
 	strcpy(module, "${module}");
 	strcpy(name, "\$test");
-	counter = \$counter;
+	strcpy(counter, "\$counter");
 	data = child_init(module, name, counter);
-${log_prefix}${stderr_prefix}	if (${func_name}() != 0)
+${log_prefix}${stderr_prefix}	if (${func_name}() != ${G_EXPECTED_OUTPUT})
 		return (-1);
 ${log_suffix}${stderr_suffix}	return (0);
 EOF
 )"
 	echo "$template" > "$path"
 	else
-		echo "	return (-(\$func_name() != 0));" > "$path"
+		echo "	return (-(\$func_name() != ${G_EXPECTED_OUTPUT}));" > "$path"
 	fi
 }
 
@@ -439,16 +447,18 @@ EOF
 #@param {string} name:state
 LIBUNITconf_params()
 {
-	local	args
 	local	param
 	local	state
 	local	counter
+	local	ifs
 
 	set +u
 	counter=$1
-	args=($(LIBUNITutils_split "$2" ":"))
-	param="G_CONF_${args[0]^^}"
-	state="${args[1]}"
+	ifs="$IFS"
+	IFS=":"	#DOC =>	changing Internal Field Separator to ":"
+	read -r param state <<< "$2"	#DOC =>	"left of : in param, rest in state"
+	IFS="$ifs"
+	param="G_CONF_${param^^}"
 	if test -z "$param";then
 		LIBUNITerror "conf_parse, line $counter:missing param $param"
 	elif test -z "${!param}";then	#DOC =>	"${!param}": expand a variable twice
@@ -457,6 +467,7 @@ LIBUNITconf_params()
 		LIBUNITerror "conf_parse, line $counter:missing statement after :"
 	fi
 	declare	-g "$param"="$state"
+	echo "$param"="$state"
 	set -u
 }
 
@@ -468,6 +479,7 @@ LIBUNITconf_parse()
 	local	mod_name=""
 	local	tests=""
 	local	start=""
+	local	end=""
 
 	# set -x
 	test -f "$G_CONFIG_FILE" || LIBUNITconf_create
@@ -476,6 +488,7 @@ LIBUNITconf_parse()
 	while read -r line || test -n "$line"; do
 		((counter++)) || ((1))
 		start="${line:0:1}"
+		end="${line: -1}"
 		#DOC=> %: trim this at the end
 		#DOC=> why? portability with files that comes from Windows
 		line="${line%$'\r'}"
@@ -486,6 +499,10 @@ LIBUNITconf_parse()
 		elif test -n "$mod_name" && test "$start" = "@";then
 			LIBUNITerror "conf_parse, line $counter:@ must be outside modules"
 		elif test "$start" = "@";then
+			if test "${line:1:1}" = '"' && test "$end" = '"';then
+				line="$(LIBUNITutils_strtrim "$line" "1")"
+				line="${line%$'"'}"
+			fi
 			line="$(LIBUNITutils_strtrim "$line" "1")"
 			LIBUNITconf_params "$counter" "$line"
 		elif test "$start" = "#";then	#DOC	=> create new test module
@@ -496,6 +513,9 @@ LIBUNITconf_parse()
 			fi	
 		elif test "$start" = "]";then	#DOC	=> close current test module
 			G_MODULES["$mod_name"]="$tests"
+			if test "$G_CONF_PROTO" != "false";then
+				G_PROTOS["$mod_name"]="$G_CONF_PROTO"
+			fi
 			mod_name=""
 			tests=""
 			test_counter=0
@@ -549,22 +569,32 @@ LIBUNITsync_rename_files()
 {
 	local	real_files=()
 	local	setup_files=()
+	local	real_file
 	local	counter
 	local	path
+	local	ifs
 
 	set +u
 	for module in "${!G_MODULES[@]}";do
-		real_files=("$(ls "$G_TARGET_DIR/$module")")
-		setup_files=("${G_MODULES["$module"]}")
-		counter=-1
+		real_files=("$G_TARGET_DIR/$module"/*.c)
+		ifs="$IFS"
+		IFS=" "
+		setup_files=(${G_MODULES["$module"]})
+		IFS="$ifs"
+		counter=0
 		for setup_file in "${setup_files[@]}";do
 			((counter++)) || ((1))
-			for real_file in "${real_files[@]}";do
-				if test "$(echo "$real_file" | grep ".*_$setup_file.c"; echo $?)" = "0";then
-					path="$(LIBUNITutils_get_testpath "$setup_file" "$counter" "$mod_name")"
-					LIBUNITsync_backup_files "$setup_file" "$counter" "$mod_name"
-					cp "$real_file" "$path"
-					rm -f "$real_file"
+			for real_filepath in "${real_files[@]}";do
+				real_file="${real_filepath##*/}"	#DOC=>	extracts the filename (after /)
+				if [[ "$real_file" == *_"${setup_file}".c ]];then	#DOC=>	checks only end
+					path="$(LIBUNITutils_get_testpath "$setup_file" "$counter" "$module")"
+					if test "$real_filepath" = "$path";then
+						continue ;
+					fi
+					real_file="${real_file%.c}"
+					LIBUNITsync_backup_files "${real_file#*_}" "${real_file%%_*}" "$module"
+					cp "$real_filepath" "$path"
+					rm -f "$real_filepath"
 				fi
 			done
 		done
@@ -587,7 +617,7 @@ LIBUNITcreate_test_template()
 	local proto="int	$module""_$counter""_$test(void)"
 	local path="$(LIBUNITutils_get_testpath "$1" $2 "$3")"
 	local header="$(LIBUNITutils_42header "$test_file")"
-	local template="	return (-(${module}() != 0));"
+	local template="	return (-(${module}() != ${G_EXPECTED_OUTPUT}));"
 
 	test -f "$path" && return ; 
 	mkdir -p "$G_TARGET_DIR/$module/"
@@ -736,7 +766,7 @@ LIBUNITmain()
 {
 	LIBUNITutils_setup
 	LIBUNITconf_parse
-	# LIBUNITsync_backup_files
+	LIBUNITsync_rename_files
 	LIBUNITcreate_files
 	LIBUNITcreate_makefile
 	LIBUNITcreate_header
