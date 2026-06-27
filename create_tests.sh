@@ -11,7 +11,6 @@ readonly G_HEADER="$G_TARGET_DIR/$G_HEADER_NAME"
 readonly G_MAIN="$G_TARGET_DIR/main.c"
 readonly G_LAUNCHER_NAME="launcher"
 readonly G_TEMPLATE_NAME="template"
-readonly G_EXPECTED_OUTPUT="0"
 export USER="alerusso"
 #@type {Map<module_name, Array<test_name>>}
 declare -A G_MODULES=()
@@ -25,6 +24,7 @@ G_CONF_TEMPLATE="false"
 G_CONF_PROTO="false"
 G_CONF_FUNCTION="false"
 G_CONF_STDERR="false"
+G_CONF_EXPECTED_OUTPUT="0"
 
 #SECTION - utilities
 
@@ -367,6 +367,7 @@ LIBUNITcreate_output_template()
 	local	module=$1
 	local	template
 	local	func_name="$module"
+	local	brackets="()"
 	local	stderr_prefix=""
 	local	stderr_suffix=""
 	local	log_prefix=""
@@ -378,6 +379,10 @@ LIBUNITcreate_output_template()
 	fi
 	if test "$G_CONF_FUNCTION" != "false";then
 		func_name="$G_CONF_FUNCTION"
+	fi
+	echo "$func_name"
+	if LIBUNITutils_index_of "$func_name" "(" != "-1";then
+		brackets=""
 	fi
 	touch "$path"
 	if test "$G_CONF_LOG" = "true" || test "$G_CONF_STDERR" = "true";then
@@ -407,14 +412,14 @@ LIBUNITcreate_output_template()
 	strcpy(name, "\$test");
 	strcpy(counter, "\$counter");
 	data = child_init(module, name, counter);
-${log_prefix}${stderr_prefix}	if (${func_name}() != ${G_EXPECTED_OUTPUT})
+${log_prefix}${stderr_prefix}	if (${func_name}${brackets} != ${G_CONF_EXPECTED_OUTPUT})
 		return (-1);
 ${log_suffix}${stderr_suffix}	return (0);
 EOF
 )"
 	echo "$template" > "$path"
 	else
-		echo "	return (-(\$func_name() != ${G_EXPECTED_OUTPUT}));" > "$path"
+		echo "	return (-(\$func_name${brackets} != ${G_CONF_EXPECTED_OUTPUT}));" > "$path"
 	fi
 }
 
@@ -617,7 +622,7 @@ LIBUNITcreate_test_template()
 	local proto="int	$module""_$counter""_$test(void)"
 	local path="$(LIBUNITutils_get_testpath "$1" $2 "$3")"
 	local header="$(LIBUNITutils_42header "$test_file")"
-	local template="	return (-(${module}() != ${G_EXPECTED_OUTPUT}));"
+	local template="	return (-(${module}() != ${G_CONF_EXPECTED_OUTPUT}));"
 
 	test -f "$path" && return ; 
 	mkdir -p "$G_TARGET_DIR/$module/"
