@@ -5,14 +5,15 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/27 15:42:46 by alerusso            #+#    #+#           */
-/*   Updated: 2026/06/27 15:42:46 by alerusso         ###   ########.fr       */
+/*   Created: 2026/06/27 18:57:10 by alerusso            #+#    #+#           */
+/*   Updated: 2026/06/27 18:57:10 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
+#define OUTPUT_PATH "module1/02.output"
 
 int	module1_02_other(void)
 {
-	return (-(module1() != "ciao mondo!"));
+	return (-(module1() != 0));
 }

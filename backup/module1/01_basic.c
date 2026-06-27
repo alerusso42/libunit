@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/14 19:21:12 by alerusso            #+#    #+#           */
-/*   Updated: 2026/06/14 19:21:12 by alerusso         ###   ########.fr       */
+/*   Created: 2026/06/27 15:42:46 by alerusso            #+#    #+#           */
+/*   Updated: 2026/06/27 15:42:46 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,5 @@
 
 int	module1_01_basic(void)
 {
-	return (-(module1() != 0));
+	return (-(module1() != "ciao mondo!"));
 }

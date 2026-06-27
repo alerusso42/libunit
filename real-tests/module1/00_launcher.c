@@ -1,18 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   02_other.c                                         :+:      :+:    :+:   */
+/*   00_launcher.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/27 15:42:46 by alerusso            #+#    #+#           */
-/*   Updated: 2026/06/27 15:42:46 by alerusso         ###   ########.fr       */
+/*   Created: 2026/06/27 18:57:10 by alerusso            #+#    #+#           */
+/*   Updated: 2026/06/27 18:57:10 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
 
-int	module1_02_other(void)
+int	module1_launcher(void)
 {
-	return (-(module1() != "ciao mondo!"));
+	t_test_list	list;
+
+	list = (t_test_list){0};
+	load_test(&list, "basic", module1_01_basic);
+	load_test(&list, "other", module1_02_other);
+	load_test(&list, "null", module1_03_null);
+	return (launch_tests(&list, "MODULE1"));
 }

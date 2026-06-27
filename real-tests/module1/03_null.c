@@ -1,18 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   02_other.c                                         :+:      :+:    :+:   */
+/*   03_null.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/27 15:42:46 by alerusso            #+#    #+#           */
-/*   Updated: 2026/06/27 15:42:46 by alerusso         ###   ########.fr       */
+/*   Created: 2026/06/27 18:57:10 by alerusso            #+#    #+#           */
+/*   Updated: 2026/06/27 18:57:10 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
+#define OUTPUT_PATH "module1/03.output"
 
-int	module1_02_other(void)
+int	module1_03_null(void)
 {
-	return (-(module1() != "ciao mondo!"));
+	return (-(module1() != 0));
 }

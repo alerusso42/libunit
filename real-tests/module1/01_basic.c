@@ -5,31 +5,15 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/27 15:42:46 by alerusso            #+#    #+#           */
-/*   Updated: 2026/06/27 15:42:46 by alerusso         ###   ########.fr       */
+/*   Created: 2026/06/27 18:57:10 by alerusso            #+#    #+#           */
+/*   Updated: 2026/06/27 18:57:10 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
+#define OUTPUT_PATH "module1/01.output"
 
-int	module2_01_basic(void)
+int	module1_01_basic(void)
 {
-	char			module[LIBUNIT_BUFFER];
-	char			name[LIBUNIT_BUFFER];
-	char			counter[LIBUNIT_BUFFER];
-	t_libunit_child	data;
-
-	strcpy(module, "module2");
-	strcpy(name, "basic");
-	strcpy(counter, "01");
-	data = child_init(module, name, counter);
-	child_redirect(&data, 1);
-	child_redirect(&data, 2);
-	if (gabibbo != "ciao mondo!")
-		return (-1);
-	if (child_cmp(&data, LIBUNIT_FLAGS_ZERO, child_release(&data, 1)) == 1)
-		return (-1);
-	if (child_cmp(&data, LIBUNIT_FLAGS_EXIST, child_release(&data, 2)) == 1)
-		return (-1);
-	return (0);
+	return (-(module1() != 0));
 }

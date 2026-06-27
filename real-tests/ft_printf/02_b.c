@@ -1,35 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   01_basic.c                                         :+:      :+:    :+:   */
+/*   02_b.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/27 15:42:46 by alerusso            #+#    #+#           */
-/*   Updated: 2026/06/27 15:42:46 by alerusso         ###   ########.fr       */
+/*   Created: 2026/06/27 18:57:10 by alerusso            #+#    #+#           */
+/*   Updated: 2026/06/27 18:57:10 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../tests.h"
+#define OUTPUT_PATH "ft_printf/02.output"
 
-int	module2_01_basic(void)
+int	ft_printf_02_b(void)
 {
-	char			module[LIBUNIT_BUFFER];
-	char			name[LIBUNIT_BUFFER];
-	char			counter[LIBUNIT_BUFFER];
-	t_libunit_child	data;
+	t_test_fds		data;
 
-	strcpy(module, "module2");
-	strcpy(name, "basic");
-	strcpy(counter, "01");
-	data = child_init(module, name, counter);
+	data = child_init(OUTPUT_PATH);
 	child_redirect(&data, 1);
 	child_redirect(&data, 2);
-	if (gabibbo != "ciao mondo!")
+	if (ft_printf("ciao") != 0)
 		return (-1);
-	if (child_cmp(&data, LIBUNIT_FLAGS_ZERO, child_release(&data, 1)) == 1)
+	if (child_cmp(&data, LIBUNIT_FLAGS_ZERO, 1) != 0)
 		return (-1);
-	if (child_cmp(&data, LIBUNIT_FLAGS_EXIST, child_release(&data, 2)) == 1)
+	if (child_cmp(&data, LIBUNIT_FLAGS_EXIST, 2) != 0)
 		return (-1);
+	child_cleanup(&data);
 	return (0);
 }

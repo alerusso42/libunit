@@ -19,7 +19,7 @@ declare -A G_PROTOS=()
 #@type {Array<logPath>>}
 declare -A G_LOGS=()
 #conf global variables
-G_CONF_LOG="false"
+G_CONF_OUTPUT="false"
 G_CONF_TEMPLATE="false"
 G_CONF_PROTO="false"
 G_CONF_FUNCTION="false"
@@ -380,41 +380,36 @@ LIBUNITcreate_output_template()
 	if test "$G_CONF_FUNCTION" != "false";then
 		func_name="$G_CONF_FUNCTION"
 	fi
-	echo "$func_name"
-	if LIBUNITutils_index_of "$func_name" "(" != "-1";then
+	#DOC =>	if func_name has already brackets, don't add others
+	if test "$(LIBUNITutils_index_of "$func_name" "(")" != "-1";then
 		brackets=""
 	fi
 	touch "$path"
-	if test "$G_CONF_LOG" = "true" || test "$G_CONF_STDERR" = "true";then
+	if test "$G_CONF_OUTPUT" = "true" || test "$G_CONF_STDERR" = "true";then
 		if test "$G_CONF_STDERR" = "true";then
 			stderr_prefix="	child_redirect(&data, 2);
 "
-			stderr_suffix="	if (child_cmp(&data, LIBUNIT_FLAGS_EXIST, child_release(&data, 2)) == 1)
+			stderr_suffix="	if (child_cmp(&data, LIBUNIT_FLAGS_EXIST, 2) != 0)
 		return (-1);
 "
 
 		fi
-		if test "$G_CONF_LOG" = "true";then
+		if test "$G_CONF_OUTPUT" = "true";then
 			log_prefix="	child_redirect(&data, 1);
 "
-			log_suffix="	if (child_cmp(&data, LIBUNIT_FLAGS_ZERO, child_release(&data, 1)) == 1)
+			log_suffix="	if (child_cmp(&data, LIBUNIT_FLAGS_ZERO, 1) != 0)
 		return (-1);
 "
 
 		fi
 		template="$(cat << EOF
-	char			module[LIBUNIT_BUFFER];
-	char			name[LIBUNIT_BUFFER];
-	char			counter[LIBUNIT_BUFFER];
-	t_libunit_child	data;
+	t_test_fds		data;
 
-	strcpy(module, "${module}");
-	strcpy(name, "\$test");
-	strcpy(counter, "\$counter");
-	data = child_init(module, name, counter);
+	data = child_init(OUTPUT_PATH);
 ${log_prefix}${stderr_prefix}	if (${func_name}${brackets} != ${G_CONF_EXPECTED_OUTPUT})
 		return (-1);
-${log_suffix}${stderr_suffix}	return (0);
+${log_suffix}${stderr_suffix}	child_cleanup(&data);
+	return (0);
 EOF
 )"
 	echo "$template" > "$path"
@@ -533,9 +528,9 @@ LIBUNITconf_parse()
 		else	#DOC	=> push to current test array
 			((test_counter++)) || ((1))
 			tests="$tests $line"
-			if test "$G_CONF_LOG" = "true";then
+			if test "$G_CONF_OUTPUT" = "true";then
 				test_counter_indexed="$(LIBUNITutils_index_number "$test_counter")"
-				touch "$G_TARGET_DIR/$mod_name/${test_counter_indexed}.log"
+				touch "$G_TARGET_DIR/$mod_name/${test_counter_indexed}.output"
 			fi		
 		fi
 	done < "$G_CONFIG_FILE"
@@ -616,10 +611,10 @@ LIBUNITsync_rename_files()
 LIBUNITcreate_test_template()
 {
 	local test="$1"
-	local counter=$(LIBUNITutils_index_number $2)
-	local test_file="$counter""_$1.c"
+	local counter_var=$(LIBUNITutils_index_number $2)
+	local test_file="$counter_var""_$1.c"
 	local module="$3"
-	local proto="int	$module""_$counter""_$test(void)"
+	local proto="int	$module""_$counter_var""_$test(void)"
 	local path="$(LIBUNITutils_get_testpath "$1" $2 "$3")"
 	local header="$(LIBUNITutils_42header "$test_file")"
 	local template="	return (-(${module}() != ${G_CONF_EXPECTED_OUTPUT}));"
@@ -628,7 +623,7 @@ LIBUNITcreate_test_template()
 	mkdir -p "$G_TARGET_DIR/$module/"
 	#DOC	=>s:exist and is non empty
 	if test -s "$G_TARGET_DIR/$module/$G_TEMPLATE_NAME";then
-		export counter="$counter"
+		export counter="$counter_var"
 		export test="$test"
 		template="$(envsubst < $G_TARGET_DIR/$module/$G_TEMPLATE_NAME)"
 		unset counter
@@ -638,6 +633,7 @@ LIBUNITcreate_test_template()
 ${header}
 
 #include "../tests.h"
+#define OUTPUT_PATH "$module/$counter_var.output"
 
 ${proto}
 {
@@ -650,16 +646,16 @@ LIBUNITcreate_files()
 {
 	local	tests
 	local	path
-	local	counter
+	local	i
 
 	for module in "${!G_MODULES[@]}";do
 		tests="${G_MODULES["$module"]}"
-		counter="0"
+		i="0"
 		for test in $tests;do
-			((counter++)) || ((1))
-			path="$(LIBUNITutils_get_testpath "$test" "$counter" "$module")"
-			test -f "$path" && LIBUNITsync_backup_files "$test" "$counter" "$module"
-			LIBUNITcreate_test_template "$test" "$counter" "$module"
+			((i++)) || ((1))
+			path="$(LIBUNITutils_get_testpath "$test" "$i" "$module")"
+			test -f "$path" && LIBUNITsync_backup_files "$test" "$i" "$module"
+			LIBUNITcreate_test_template "$test" "$i" "$module"
 		done
 	done
 }

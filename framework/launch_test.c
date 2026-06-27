@@ -6,7 +6,7 @@
 /*   By: alerusso <alessandro.russo.frc@gmail.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 16:10:09 by alerusso          #+#    #+#             */
-/*   Updated: 2026/06/06 13:47:24 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/06/27 18:46:23 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ void	print_result(int succeded, int total)
  */
 void	open_log_file(t_test_list *list, char *func_name)
 {
-	char	path[256];
+	char	path[LIBUNIT_BUFFER];
 
 	strcpy(path, LOG_PATH);
 	strncat(path, func_name, sizeof(path) - strlen(LOG_PATH) - 1);
@@ -122,7 +122,7 @@ void	open_log_file(t_test_list *list, char *func_name)
 
 void	print_failure(t_test_list *list, t_test_node *curr, int *failed)
 {
-	char	buff[256];
+	char	buff[LIBUNIT_BUFFER];
 	int		result;
 
 	(*failed) += 1;
