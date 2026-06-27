@@ -1,5 +1,6 @@
 NAME = libunit.a
-LIBUNIT =  $(addprefix framework/, cleanup.c  error.c  launch_test.c  load_test.c  print_test.c libft_utils.c)
+LIBUNIT =  $(addprefix framework/, cleanup.c  error.c  launch_test.c  load_test.c  print_test.c libft_utils.c child_output.c)
+OTHER = 
 SRC = $(LIBUNIT)
 OBJ_SRC = $(SRC:.c=.o)
 OBJ = $(OBJ_SRC)
@@ -34,19 +35,20 @@ check_tester:
 	-$(MAKE) test -C tests
 
 test: all
-	@echo -e $(DIV) $(TABS) "TESTS" $(TABS) "\n" $(DIV)
-	-$(MAKE) test -C tests
 	@echo -e $(DIV) $(TABS) "REAL-TESTS" $(TABS) "\n" $(DIV)
 	-$(MAKE) test -C real-tests
 
 val: all
-	@echo -e $(DIV) $(TABS) "TESTS" $(TABS) "\n" $(DIV)
-	-$(MAKE) val -C tests
 	@echo -e $(DIV) $(TABS) "REAL-TESTS" $(TABS) "\n" $(DIV)
 	-$(MAKE) val -C real-tests
 
 norm:
 	@norminette | grep "Error!" || echo ""
 	@norminette > /dev/null && echo -e "\033[32mNorminette OK\033[0m" || echo ""
+
+#SECTION - script utils
+
+generate:
+	chmod +x ./create_tests.sh && ./create_tests.sh
 
 .PHONY: all clean fclean re main gdb run valgrind val val_noflags

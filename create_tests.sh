@@ -19,6 +19,8 @@ declare -A G_PROTOS=()
 #@type {Array<logPath>>}
 declare -A G_LOGS=()
 #conf global variables
+G_CONF_OBJ="empty"
+G_CONF_INC="empty"
 G_CONF_OUTPUT="false"
 G_CONF_TEMPLATE="false"
 G_CONF_PROTO="false"
@@ -64,7 +66,7 @@ LIBUNITutils_setup()
 	#DOC	=> BASH_COMMAND: last command executed
 	trap 'LIBUNITcatch_error ${LINENO} "${BASH_COMMAND}"' ERR 
 	if test "$USER" = "" || test "$USER" = "codespace";then
-		LIBUNITerror "Variable HOST unset. Set it at the top of this script"
+		LIBUNITerror "Variable USER unset. Set it at the top of this script"
 	fi
 }
 
@@ -301,6 +303,7 @@ LIBUNITformat_header()
 		if test "${G_PROTOS["$2"]}" != "";then
 			echo "${G_PROTOS["$2"]};"
 		fi
+		echo "int	${2}_launcher(void);"
 	fi
 	echo "int	${2}_${1}_${3}(void);"
 	set -u
@@ -480,6 +483,7 @@ LIBUNITconf_parse()
 	local	tests=""
 	local	start=""
 	local	end=""
+	local	obj_path=""
 
 	# set -x
 	test -f "$G_CONFIG_FILE" || LIBUNITconf_create
@@ -534,6 +538,16 @@ LIBUNITconf_parse()
 			fi		
 		fi
 	done < "$G_CONFIG_FILE"
+	obj_path="${G_CONF_OBJ}"
+	if test "${obj_path}" = "empty";then
+		LIBUNITerror "conf parse: the field @obj:<path> is mandatory! give the path to the dir where you keep them. Example: '@obj:../my_awesome_project'. they are found recursively in your workdir"
+	fi
+	test -d "${obj_path}" || LIBUNITerror "conf parse: the path \"${obj_path}\" does not exist"
+	#DOC => if there are no object in the path, error
+	G_CONF_OBJ="$(find "$G_CONF_OBJ" -name "*.o" ! -name "main.o" ! -name "*test*" 2>/dev/null)"
+	if test "$G_CONF_OBJ" = "";then
+		LIBUNITerror "conf parse: the path \"${obj_path}\" has no object inside. Have you compiled it? tip: main.o and files with 'test' in the name are excluded."
+	fi
 	echo "Parse OK!"
 	# set +x
 }
@@ -664,8 +678,13 @@ LIBUNITcreate_makefile()
 {
 	local	files
 	local	tests
+	local	includes
 
 	files="SRC = main.c"
+	includes="-I ${G_CONF_INC} -I ./"
+	if test "${G_CONF_INC}" = "empty";then
+		includes=""
+	fi
 	for module in "${!G_MODULES[@]}";do
 		files="$files"'\
 	$(addprefix '"$module"'/, $(shell ls '"$module"' | grep '\''\.c'\''))'
@@ -674,6 +693,8 @@ LIBUNITcreate_makefile()
 ${files}
 NAME = test.out
 LIBUNIT = ../libunit.a
+PROJ_INC_DIR = ${includes}
+PROJ_OBJ = ../${G_CONF_OBJ}
 OBJ = \$(SRC:.c=.o)
 COMP = cc -g -Wall -Werror -Wextra
 
@@ -681,7 +702,7 @@ all: \$(NAME)
 	
 \$(NAME) : \$(LIBUNIT) \$(OBJ) 
 	echo \$(SRC)
-	\$(COMP) \$(OBJ) \$(LIBUNIT) -o \$(NAME)
+	\$(COMP) \$(OBJ) \$(PROJ_OBJ) \$(LIBUNIT) -o \$(NAME)
 
 \$(LIBUNIT):
 	\$(MAKE) -C ../

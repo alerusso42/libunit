@@ -6,7 +6,7 @@
 /*   By: alerusso <alessandro.russo.frc@gmail.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/27 15:41:53 by alerusso          #+#    #+#             */
-/*   Updated: 2026/06/27 18:43:38 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/06/27 22:36:49 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,20 +27,13 @@ void	child_cleanup(t_test_fds *fds)
 {
 	if (!fds)
 		return ;
-	if (fds->output)
-		close(fds->output);
-	if (fds->redirect_stderr[0])
-		close(fds->redirect_stderr[0]);
-	if (fds->redirect_stdout[0])
-		close(fds->redirect_stdout[0]);
-	if (fds->redirect_stderr[1])
-		close(fds->redirect_stderr[1]);
-	if (fds->redirect_stdout[1])
-		close(fds->redirect_stdout[1]);
-	if (fds->restore_stderr)
-		close(fds->restore_stderr);
-	if (fds->restore_stdout)
-		close(fds->restore_stdout);
+	ft_close(&fds->output);
+	ft_close(&fds->redirect_stderr[0]);
+	ft_close(&fds->redirect_stdout[0]);
+	ft_close(&fds->redirect_stderr[1]);
+	ft_close(&fds->redirect_stdout[1]);
+	ft_close(&fds->restore_stderr);
+	ft_close(&fds->restore_stdout);
 	*fds = (t_test_fds){0};		
 }
 
@@ -58,7 +51,7 @@ void	child_redirect(t_test_fds *fds, int fd_fileno)
 			return (child_redirect(fds, -1));
 		if (pipe(fds->redirect_stdout) != 0)
 			return (child_redirect(fds, -1));
-		if (dup2(fds->redirect_stdout, STDOUT_FILENO) < 0)
+		if (dup2(fds->redirect_stdout[1], STDOUT_FILENO) < 0)
 			return (child_redirect(fds, -1));
 	}
 	else if (fd_fileno == 2)
@@ -68,7 +61,7 @@ void	child_redirect(t_test_fds *fds, int fd_fileno)
 			return (child_redirect(fds, -1));
 		if (pipe(fds->redirect_stderr) != 0)
 			return (child_redirect(fds, -1));
-		if (dup2(fds->redirect_stderr, STDERR_FILENO) < 0)
+		if (dup2(fds->redirect_stderr[1], STDERR_FILENO) < 0)
 			return (child_redirect(fds, -1));
 	}
 }
@@ -76,29 +69,28 @@ void	child_redirect(t_test_fds *fds, int fd_fileno)
 char	*child_release(t_test_fds *fds, int fd_fileno)
 {
 	char	*output;
-	int		fd_release;
+	int		fd_input;
+	int		pipe_size;
 
 	if (fd_fileno != 1 && fd_fileno != 2)
-	{
 		return (child_cleanup(fds), error(NULL, "child_release: error"), NULL);
-	}
 	else if (fd_fileno == 1)
 	{
-		close(fds->redirect_stdout[1]);
-		fds->redirect_stdout[1] = 0;
-		output = ft_readfile(fds->redirect_stdout[0]);
-		fd_release = 1;
+		ft_close(&fds->redirect_stdout[1]);
+		fd_input = fds->redirect_stdout[0];
+		dup2(fds->restore_stdout, STDOUT_FILENO);
 	}
 	else if (fd_fileno == 2)
 	{
-		close(fds->redirect_stderr[1]);
-		fds->redirect_stderr[1] = 0;
-		output = ft_readfile(fds->redirect_stderr[0]);
-		fd_release = 2;
+		ft_close(&fds->redirect_stderr[1]);
+		fd_input = fds->redirect_stderr[0];
+		dup2(fds->restore_stderr, STDERR_FILENO);
 	}
-	if (!output)
+	if (ioctl(fd_input, FIONREAD, &pipe_size) < 0 || pipe_size < 0)
 		return (NULL);
-	write(fd_release, output, strlen(output));
+	output = ft_readfile(fd_input, pipe_size);
+	if (output)
+		write(fd_fileno, output, strlen(output));
 	return (output);
 }
 
@@ -116,7 +108,7 @@ int	child_cmp(t_test_fds *fds, int test_flags, int fd_fileno)
 	output_exist_bool = output_real != NULL;
 	if (test_flags & LIBUNIT_FLAGS_EXIST)
 		return (free(output_real), output_exist_bool);
-	output_expected = ft_readfile(fds->output);
+	output_expected = ft_readfile(fds->output, -1);
 	if (fds->output > 0)
 		lseek(fds->output, 0, SEEK_SET);
 	if (!output_expected && !output_real)

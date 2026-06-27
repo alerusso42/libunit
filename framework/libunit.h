@@ -6,13 +6,15 @@
 /*   By: alerusso <alessandro.russo.frc@gmail.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 18:10:34 by alerusso          #+#    #+#             */
-/*   Updated: 2026/06/27 18:46:31 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/06/27 22:35:29 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBUNIT_H
 # define LIBUNIT_H
 
+//allow to check a pipe buffer size
+#include <sys/ioctl.h>
 # include <unistd.h>
 # include <string.h>
 # include <fcntl.h>
@@ -24,6 +26,7 @@
 
 # define LOG_PATH "../log/"
 # define LIBUNIT_BUFFER 256
+# define LIBUNIT_PIPE_ENDMARK "LIBUNIT_PIPE_ENDMARK"
 
 enum	e_status
 {
@@ -77,7 +80,8 @@ void		load_test(t_test_list *list, char *test_type, int (*test)(void));
 void		print_test(t_test_node *node, char *func_name);
 void		ft_putnbr(int num);
 char		*ft_strndup(char *str, int n);
-char		*ft_readfile(int fd);
+char		*ft_readfile(int fd, int max_size);
+void		ft_close(int *fd);
 t_test_fds	child_init(char *output_path);
 void		child_cleanup(t_test_fds *fds);
 void		child_redirect(t_test_fds *fds, int fd_fileno);

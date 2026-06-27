@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tests.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alerusso <alerusso@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alerusso <alessandro.russo.frc@gmail.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:24:48 by alerusso          #+#    #+#             */
-/*   Updated: 2026/05/24 14:52:50 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/06/27 23:41:48 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "../framework/libunit.h"
 # include <string.h>
+# include <limits.h>
 
 //SECTION - strlen
 int	strlen_launcher(void);
@@ -34,6 +35,13 @@ int	atoi_test_negative(void);
 // SECTION - strcpy
 int	strcpy_launcher(void);
 int	strcpy_test_basic(void);
+
+//SECTION - ft_printf
+int	printf_launcher(void);
+int	printf_01_ciao(void);
+int	printf_02_ciao_ciao(void);
+int	printf_03_null(void);
+int	printf_04_format(void);
 
 // SECTION - signals
 int	signals_launcher(void);

@@ -6,7 +6,7 @@
 /*   By: alerusso <alessandro.russo.frc@gmail.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 13:48:25 by alerusso          #+#    #+#             */
-/*   Updated: 2026/06/27 18:20:53 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/06/28 00:20:42 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,31 +49,39 @@ char	*ft_strndup(char *str, int n)
 	return (dup);
 }
 
-char	*ft_readfile(int fd)
+char	*ft_readfile(int fd, int max_size)
 {
 	char	buffer[BUFFER_SIZE];
 	char	*content;
-	int		bytes_read;
-	int		bytes_total;
+	int		bytes;
+	int		total;
 
-	if (fd <= 0 || BUFFER_SIZE <= 1)
-		return (NULL);
-	bytes_total = 0;
+	total = 0;
 	content = NULL;
-	bytes_read = read(fd, buffer, BUFFER_SIZE - 1);
-	while (bytes_read > 0)
+	bytes = read(fd, buffer, BUFFER_SIZE - 1);
+	while (bytes > 0 && (!content || max_size < 0 || total < max_size))
 	{
-		buffer[bytes_read] = 0;
-		bytes_total += bytes_read;
+		buffer[bytes] = 0;
+		total += bytes;
 		if (!content)
-			content = ft_strndup(buffer, bytes_read);
+			content = ft_strndup(buffer, bytes);
 		else
 		{
-			content = realloc(content, bytes_total);
-			strncat(content, buffer, bytes_read);
+			content = realloc(content, total + 1);
+			strncat(content, buffer, bytes);
 		}
-		content[bytes_total] = 0;
-		bytes_read = read(fd, buffer, BUFFER_SIZE - 1);
+		content[total] = 0;
+		if (max_size < 0 || total < max_size)
+			bytes = read(fd, buffer, BUFFER_SIZE - 1);
 	}
 	return (content);
+}
+
+void	ft_close(int *fd)
+{
+	if (!fd)
+		return ;
+	if (*fd > 0)
+		close(*fd);
+	*fd = 0;
 }

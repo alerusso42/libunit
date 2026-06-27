@@ -1,3 +1,8 @@
+# Libunit
+log/
+backup/
+real-tests/
+
 # Prerequisites
 *.d
 
@@ -53,5 +58,3 @@ dkms.conf
 
 # debug information files
 *.dwo
-log/
-backup/
