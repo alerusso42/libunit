@@ -6,7 +6,7 @@
 /*   By: alerusso <alessandro.russo.frc@gmail.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/27 15:41:53 by alerusso          #+#    #+#             */
-/*   Updated: 2026/06/28 00:58:20 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/06/28 01:04:07 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	child_cleanup(t_test_fds *fds)
 	ft_close(&fds->redirect_stdout[1]);
 	ft_close(&fds->restore_stderr);
 	ft_close(&fds->restore_stdout);
-	*fds = (t_test_fds){0};		
+	*fds = (t_test_fds){0};
 }
 
 /**

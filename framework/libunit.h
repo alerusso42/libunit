@@ -6,7 +6,7 @@
 /*   By: alerusso <alessandro.russo.frc@gmail.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 18:10:34 by alerusso          #+#    #+#             */
-/*   Updated: 2026/06/27 22:35:29 by alerusso         ###   ########.fr       */
+/*   Updated: 2026/06/28 01:03:39 by alerusso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define LIBUNIT_H
 
 //allow to check a pipe buffer size
-#include <sys/ioctl.h>
+# include <sys/ioctl.h>
 # include <unistd.h>
 # include <string.h>
 # include <fcntl.h>
@@ -71,7 +71,6 @@ struct s_test_fds
 	int	redirect_stdout[2];
 	int	redirect_stderr[2];
 };
-
 
 void		cleanup(t_test_list *list);
 void		error(t_test_list *list, char *log);
