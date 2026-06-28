@@ -427,14 +427,33 @@ LIBUNITconf_create()
 {
 	touch "$G_CONFIG_FILE"
 	cat > "$G_CONFIG_FILE" << EOF
-#module1
+#the path to the .o to test. subdirectories are included, files named main.o or *test*.o are not.
+@obj:
+#OPTIONAL:the path to the includes of the .o
+#@inc:/usr/lib/SDL2/
+#OPTIONAL:true if the output compare is needed. .output files are generated (default: false)
+#@output:true
+#OPTIONAL:true if you want to personalize tests (default: false)
+#Pro tip: delete foo and bar modules, made your empty modules, run the script and modify the templates
+#@template:true
+#OPTIONAL:if true, the test fails if it prints something on the stderr (default: false)
+#@stderr:true
+#OPTIONAL:the expected output of the function to test (default: 0)
+#@expected_output:true
+
+#OPTIONAL:the prototype of the function to test (default: int	<module_name>(void))
+#@proto:"int	foo(void)"
+#OPTIONAL:the prototype of the function to test (default: <module_name>)
+#@function:foo
+
+\$foo
 [
 	basic
 	other
 	null
 ]
 
-#module2
+\$bar
 [
 	basic
 	other
@@ -442,7 +461,8 @@ LIBUNITconf_create()
 ]
 
 EOF
-	LIBUNITerror "Please edit the file $G_CONFIG_FILE and try again."
+	LIBUNITlog_info "Please edit the file $G_CONFIG_FILE and try again."
+	exit 2
 }
 
 #@description modify creation behaviour (read README.md)
@@ -496,9 +516,9 @@ LIBUNITconf_parse()
 		#DOC=> %: trim this at the end
 		#DOC=> why? portability with files that comes from Windows
 		line="${line%$'\r'}"
-		if test "$line" = "" || test "$start" = ";" || test "$start" = "["; then
+		if test "$line" = "" || test "$start" = ";" || test "$start" = "[" || test "$start" = "#"; then
 			continue;
-		elif test -n "$mod_name" && test "$start" = "#";then
+		elif test -n "$mod_name" && test "$start" = "$";then
 			LIBUNITerror "conf_parse, line $counter:unclosed module $mod_name"
 		elif test -n "$mod_name" && test "$start" = "@";then
 			LIBUNITerror "conf_parse, line $counter:@ must be outside modules"
@@ -509,7 +529,7 @@ LIBUNITconf_parse()
 			fi
 			line="$(LIBUNITutils_strtrim "$line" "1")"
 			LIBUNITconf_params "$counter" "$line"
-		elif test "$start" = "#";then	#DOC	=> create new test module
+		elif test "$start" = "$";then	#DOC	=> create new test module
 			mod_name=$(LIBUNITutils_strtrim "$line" 1)
 			mkdir -p "$G_TARGET_DIR/$mod_name/"
 			if test "$G_CONF_TEMPLATE" = "true";then
@@ -546,7 +566,7 @@ LIBUNITconf_parse()
 	#DOC => if there are no object in the path, error
 	G_CONF_OBJ="$(find "$G_CONF_OBJ" -name "*.o" ! -name "main.o" ! -name "*test*" 2>/dev/null)"
 	if test "$G_CONF_OBJ" = "";then
-		LIBUNITerror "conf parse: the path \"${obj_path}\" has no object inside. Have you compiled it? tip: main.o and files with 'test' in the name are excluded."
+		LIBUNITerror "conf parse: the path \"${obj_path}\" and its subdirectories have no object inside. Have you compiled it? tip: main.o and files with 'test' in the name are excluded."
 	fi
 	echo "Parse OK!"
 	# set +x
