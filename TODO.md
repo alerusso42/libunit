@@ -20,4 +20,4 @@
 
 # PRIORITY 3 OTTIMIZZAZIONE:
 
-[]	script che automatizza creazione test
+[X]	script che automatizza creazione test

@@ -55,9 +55,10 @@ LIBUNITerror()
 
 LIBUNITutils_setup()
 {
-	set -e		#DOC	=> e: exit on errors (check only )
-	set -u		#DOC	=> u:track undefined variables
-	set -E		#DOC	=> E:track functions
+	set -e				#DOC	=> e: exit on errors (check only )
+	set -u				#DOC	=> u:track undefined variables
+	set -E				#DOC	=> E:track functions
+	shopt -s extglob	#DOC	=> shopt: allows shell to parse regex safely
 	#set -x		#DEBUG	=> x: prints every command run
 	mkdir -p "$G_TARGET_DIR"
 	mkdir -p "$G_BACKUP_DIR"
@@ -287,6 +288,22 @@ LIBUNITutils_foreach_module()
 		"$func" "$counter_indexed" "$module"
 	done
 	echo "$ret"
+}
+
+#@description run a function for every file.
+#@param {function} 1:func to run
+#@param {function} 2:path where running ls
+#@print {...} args
+LIBUNITutils_foreach_file()
+{
+	local	func
+	local	path
+
+	func="$1"
+	path="$2"
+	for file in $(ls "$path" || echo -n "");do
+		"$func" "$path/$file"
+	done
 }
 
 #SECTION - format output
@@ -552,10 +569,6 @@ LIBUNITconf_parse()
 		else	#DOC	=> push to current test array
 			((test_counter++)) || ((1))
 			tests="$tests $line"
-			if test "$G_CONF_OUTPUT" = "true";then
-				test_counter_indexed="$(LIBUNITutils_index_number "$test_counter")"
-				touch "$G_TARGET_DIR/$mod_name/${test_counter_indexed}.output"
-			fi		
 		fi
 	done < "$G_CONFIG_FILE"
 	obj_path="${G_CONF_OBJ}"
@@ -575,65 +588,83 @@ LIBUNITconf_parse()
 #SECTION - sync #handles file replace, rename, ecc.
 
 #@description save a file in the backup directory
-#@param {string} $1:testname
-#@param {number} $2:counter
-#@param {string} $3:module
 LIBUNITsync_backup_files()
 {
-	local	path
-	local	backup
-	local	backup_len
-	local	counter
-
-	path="$(LIBUNITutils_get_testpath "$1" "$2" "$3")"
-	test -f "$path" || return ;
-	mkdir -p "$G_BACKUP_DIR/$3"
-	backup="$(LIBUNITutils_get_backpath "$1" "$2" "$3")"
-	counter=1
-	while test -f "$backup";do
-		backup_len="$((("${#backup}" - 2)))"	#DOC	=> trim .c
-		backup="$(LIBUNITutils_strtrim "$backup" "$backup_len")"
-		backup="$G_BACKUP_DIR/$backup""_$counter.c"
-		((++counter))
+	for dir in $(cd "$G_TARGET_DIR" && ls);do
+		if test -d "$G_TARGET_DIR/$dir" && test "$(ls "$G_TARGET_DIR/$dir/")" != "";then
+			mkdir -p  "$G_BACKUP_DIR/$dir"
+			mv "$G_TARGET_DIR/$dir/"* "$G_BACKUP_DIR/$dir"
+			rm -rf "$G_BACKUP_DIR/$dir/*.o" "$G_BACKUP_DIR/$dir/00_launcher.c"
+		fi
 	done
-	cp "$path" "$backup"
 }
 
+#@description checks if a template file must be restored
+#@param {number} $1:counter
+#@param {string} $2:module
+LIBUNITsync_backup_template()
+{
+	if test ! -d "$G_BACKUP_DIR/$2";then
+		return ;
+	fi
+	if test "$G_CONF_TEMPLATE" = "true" && test -f "$G_BACKUP_DIR/$2/template";then
+		mv "$G_BACKUP_DIR/$2/template" "$G_TARGET_DIR/$2/template"
+	fi
+}
+
+#@description checks if a directory is empty. If it is, it deletes it
+#@param {number} $1:dirname
+LIBUNITsync_delete_empty_dir()
+{
+	if test ! -d "$1";then
+		return ;
+	fi
+	if test "$(ls "$1" 2>/dev/null || echo -n "")" = "";then
+		rm -rf "$1"
+	fi
+}
+
+#@description checks if a file must be moved from backup to real_tests
+#@param {number} $1:counter
+#@param {string} $2:module
+#@param {string} $3:testname
 LIBUNITsync_rename_files()
 {
-	local	real_files=()
-	local	setup_files=()
-	local	real_file
-	local	counter
-	local	path
-	local	ifs
+	local	backup_file
+	local	renamed_file
+	local	file_without_counter
+	local	counter_indexed
 
-	set +u
-	for module in "${!G_MODULES[@]}";do
-		real_files=("$G_TARGET_DIR/$module"/*.c)
-		ifs="$IFS"
-		IFS=" "
-		setup_files=(${G_MODULES["$module"]})
-		IFS="$ifs"
-		counter=0
-		for setup_file in "${setup_files[@]}";do
-			((counter++)) || ((1))
-			for real_filepath in "${real_files[@]}";do
-				real_file="${real_filepath##*/}"	#DOC=>	extracts the filename (after /)
-				if [[ "$real_file" == *_"${setup_file}".c ]];then	#DOC=>	checks only end
-					path="$(LIBUNITutils_get_testpath "$setup_file" "$counter" "$module")"
-					if test "$real_filepath" = "$path";then
-						continue ;
-					fi
-					real_file="${real_file%.c}"
-					LIBUNITsync_backup_files "${real_file#*_}" "${real_file%%_*}" "$module"
-					cp "$real_filepath" "$path"
-					rm -f "$real_filepath"
-				fi
-			done
-		done
-	done
-	set -u
+	if test ! -d "$G_BACKUP_DIR/$2";then
+		return ;
+	fi
+	backup_file=""
+	counter_indexed="$(LIBUNITutils_index_number "$counter")"
+	set +euE
+	backup_file="$(cd "$G_BACKUP_DIR" 2>/dev/null && ls "$2/"*_"$3".c 2>/dev/null; echo "")"
+	set -euE
+	if test "$backup_file" = "";then
+		return ;
+	fi
+	mkdir -p "$G_TARGET_DIR/$2"
+	file_without_counter="${backup_file##*/}"					#DOC =>	erases module
+	file_without_counter="${file_without_counter#+([0-9])_}"	#DOC =>	erares numbers + _
+	renamed_file="$2/${counter_indexed}_${file_without_counter}"
+	mv "$G_BACKUP_DIR/$backup_file" "$G_TARGET_DIR/$renamed_file"
+	#DOC =>	changes output_path macro using sed black magic
+	sed -i -E "s|#define OUTPUT_PATH \"[^\"]*\"|#define OUTPUT_PATH \"${module}/${counter_indexed}_$3.output\"|" "$G_TARGET_DIR/$renamed_file"
+	#DOC =>	same for .output files
+	backup_file=""
+	set +euE
+	backup_file="$(cd "$G_BACKUP_DIR" 2>/dev/null && ls "$2/"*_"$3".output 2>/dev/null; echo "")"
+	set -euE
+	if test "$backup_file" = "";then
+		return ;
+	fi
+	file_without_counter="${backup_file##*/}"					#DOC =>	erases module
+	file_without_counter="${file_without_counter#+([0-9])_}"	#DOC =>	erares numbers + _
+	renamed_file="$2/${counter_indexed}_${file_without_counter}"
+	mv "$G_BACKUP_DIR/$backup_file" "$G_TARGET_DIR/$renamed_file"
 }
 
 #SECTION - creation
@@ -667,7 +698,7 @@ LIBUNITcreate_test_template()
 ${header}
 
 #include "../tests.h"
-#define OUTPUT_PATH "$module/$counter_var.output"
+#define OUTPUT_PATH "$module/${counter_var}_$1.output"
 
 ${proto}
 {
@@ -679,6 +710,8 @@ EOF
 LIBUNITcreate_files()
 {
 	local	tests
+	local	backup_output
+	local	real_output
 	local	path
 	local	i
 
@@ -688,8 +721,17 @@ LIBUNITcreate_files()
 		for test in $tests;do
 			((i++)) || ((1))
 			path="$(LIBUNITutils_get_testpath "$test" "$i" "$module")"
-			test -f "$path" && LIBUNITsync_backup_files "$test" "$i" "$module"
+			#test -f "$path" && LIBUNITsync_backup_files "$test" "$i" "$module"
 			LIBUNITcreate_test_template "$test" "$i" "$module"
+			backup_output="$G_BACKUP_DIR/$module/$(LIBUNITutils_index_number "$i")_$test.output"
+			real_output="$G_TARGET_DIR/$module/$(LIBUNITutils_index_number "$i")_$test.output"
+			if test -f "$real_output";then
+				touch "$real_output"
+			elif test -f "$backup_output";then
+				mv "$backup_output" "$real_output"
+			elif test "$G_CONF_OUTPUT" != "false";then
+				touch "$real_output"
+			fi
 		done
 	done
 }
@@ -808,12 +850,16 @@ LIBUNITmain()
 {
 	LIBUNITutils_setup
 	LIBUNITconf_parse
-	LIBUNITsync_rename_files
+	LIBUNITsync_backup_files
+	LIBUNITutils_foreach_test LIBUNITsync_rename_files
+	LIBUNITutils_foreach_module LIBUNITsync_backup_template
 	LIBUNITcreate_files
 	LIBUNITcreate_makefile
 	LIBUNITcreate_header
 	LIBUNITcreate_main
 	LIBUNITcreate_launcher
+	LIBUNITutils_foreach_file LIBUNITsync_delete_empty_dir "$G_BACKUP_DIR"
+	LIBUNITutils_foreach_file LIBUNITsync_delete_empty_dir "$G_TARGET_DIR"
 	for module in "${!G_MODULES[@]}";do
 		echo "$module:	" "${G_MODULES["$module"]}"
 	done
