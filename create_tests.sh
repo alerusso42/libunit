@@ -444,6 +444,9 @@ LIBUNITconf_create()
 {
 	touch "$G_CONFIG_FILE"
 	cat > "$G_CONFIG_FILE" << EOF
+#NOTE - delete '#' you want to try a flag
+#SECTION - globals flags: they DON't reset after test ends
+
 #the path to the .o to test. subdirectories are included, files named main.o or *test*.o are not.
 @obj:
 #OPTIONAL:the path to the includes of the .o
@@ -458,9 +461,11 @@ LIBUNITconf_create()
 #OPTIONAL:the expected output of the function to test (default: 0)
 #@expected_output:true
 
+#SECTION - module flags: they reset after test ends
+
 #OPTIONAL:the prototype of the function to test (default: int	<module_name>(void))
 #@proto:"int	foo(void)"
-#OPTIONAL:the prototype of the function to test (default: <module_name>)
+#OPTIONAL:the name of the function to test (default: <module_name>)
 #@function:foo
 
 \$foo
@@ -469,6 +474,11 @@ LIBUNITconf_create()
 	other
 	null
 ]
+
+#OPTIONAL:the prototype of the function to test (default: int	<module_name>(void))
+#@proto:"int	bar(void)"
+#OPTIONAL:the name of the function to test (default: <module_name>)
+#@function:bar
 
 \$bar
 [

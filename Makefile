@@ -21,12 +21,12 @@ $(NAME) : $(OBJ)
 clean: 
 	rm -f $(OBJ) $(OBJ_BONUS) *.out
 	$(MAKE) clean -C tests
-	$(MAKE) clean -C real-tests
+# 	$(MAKE) clean -C real-tests
 
 fclean: clean
 	rm -f $(NAME)
 	$(MAKE) fclean -C tests
-	$(MAKE) fclean -C real-tests
+# 	$(MAKE) fclean -C real-tests
 
 re: fclean all
 
