@@ -10,7 +10,7 @@ readonly G_HEADER_NAME="tests.h"
 readonly G_HEADER="$G_TARGET_DIR/$G_HEADER_NAME"
 readonly G_MAIN="$G_TARGET_DIR/main.c"
 readonly G_LAUNCHER_NAME="launcher"
-readonly G_TEMPLATE_NAME="template"
+readonly G_TEMPLATE_NAME="__template.c"
 export USER="alerusso"
 #@type {Map<module_name, Array<test_name>>}
 declare -A G_MODULES=()
@@ -582,8 +582,12 @@ LIBUNITconf_parse()
 		fi
 	done < "$G_CONFIG_FILE"
 	obj_path="${G_CONF_OBJ}"
+	if test "${obj_path}" = "empty" && test "${G_CONF_INC}" = "empty";then
+		LIBUNITerror "conf parse: the field @obj:<path> (or @inc:<path>) is mandatory! give the path to the dir where you keep them. Example: '@obj:../my_awesome_project'. they are found recursively in your workdir"
+	fi
 	if test "${obj_path}" = "empty";then
-		LIBUNITerror "conf parse: the field @obj:<path> is mandatory! give the path to the dir where you keep them. Example: '@obj:../my_awesome_project'. they are found recursively in your workdir"
+		echo "PARSE OK!"
+		return
 	fi
 	test -d "${obj_path}" || LIBUNITerror "conf parse: the path \"${obj_path}\" does not exist"
 	#DOC => if there are no object in the path, error
@@ -694,6 +698,7 @@ LIBUNITcreate_test_template()
 	local header="$(LIBUNITutils_42header "$test_file")"
 	local template="	return (-(${module}() != ${G_CONF_EXPECTED_OUTPUT}));"
 
+	if test 
 	test -f "$path" && return ; 
 	mkdir -p "$G_TARGET_DIR/$module/"
 	#DOC	=>s:exist and is non empty
@@ -759,7 +764,7 @@ LIBUNITcreate_makefile()
 	fi
 	for module in "${!G_MODULES[@]}";do
 		files="$files"'\
-	$(addprefix '"$module"'/, $(shell ls '"$module"' | grep '\''\.c'\''))'
+	$(addprefix '"$module"'/, $(shell ls '"$module"' | grep '\''\.c'\'' | grep -v '"$G_CONF_TEMPLATE"'))'
 	done
 	cat > "$G_MAKEFILE" << EOF
 ${files}
