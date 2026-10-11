@@ -18,6 +18,10 @@
 [X]	log
 
 
-# PRIORITY 3 OTTIMIZZAZIONE:
+# PRIORITY 3:
 
 [X]	script che automatizza creazione test
+[X] stdout/err support
+[X] miglioramento template
+[] supporto c++
+[] supporto socket/server

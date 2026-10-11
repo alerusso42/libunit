@@ -377,83 +377,6 @@ int	${module}_launcher(void)
 EOF
 }
 
-#FIXME - this should be on create part
-
-#@description create a template according to @ flags
-#@param {string} module 
-LIBUNITcreate_output_template()
-{
-	local	path
-	local	module=$1
-	local	template
-	local	func_name="$module"
-	local	brackets="()"
-	local	stderr_prefix=""
-	local	stderr_suffix=""
-	local	log_prefix=""
-	local	log_suffix=""
-	local module="$1"
-	local proto="int	$module"_""\$counter""\$test"(void)"
-	local template="	return (-(${module}() != ${G_CONF_EXPECTED_OUTPUT}));"
-
-	path="$G_TARGET_DIR/$module/$G_TEMPLATE_NAME"
-	if test -f "$path";then
-		return ;
-	fi
-	if test "$G_CONF_FUNCTION" != "false";then
-		func_name="$G_CONF_FUNCTION"
-	fi
-	#DOC =>	if func_name has already brackets, don't add others
-	if test "$(LIBUNITutils_index_of "$func_name" "(")" != "-1";then
-		brackets=""
-	fi
-	touch "$path"
-	if test "$G_CONF_OUTPUT" = "true" || test "$G_CONF_STDERR" = "true";then
-		if test "$G_CONF_STDERR" = "true";then
-			stderr_prefix="	child_redirect(&data, 2);
-"
-			stderr_suffix="	if (child_cmp(&data, LIBUNIT_FLAGS_EXIST, 2) != 0)
-		return (-1);
-"
-
-		fi
-		if test "$G_CONF_OUTPUT" = "true";then
-			log_prefix="	child_redirect(&data, 1);
-"
-			log_suffix="	if (child_cmp(&data, LIBUNIT_FLAGS_ZERO, 1) != 0)
-		return (-1);
-"
-
-		fi
-		template="$(cat << EOF
-	#include "../tests.h"
-	#define OUTPUT_PATH "${module}/\$counter\$test.output"
-
-	${proto}
-	{
-		t_test_fds		data;
-
-		data = child_init(OUTPUT_PATH);
-	${log_prefix}${stderr_prefix}	if (${func_name}${brackets} != ${G_CONF_EXPECTED_OUTPUT})
-			return (-1);
-	${log_suffix}${stderr_suffix}	child_cleanup(&data);
-		return (0);
-	}
-
-EOF
-)"
-	echo "$template" > "$path"
-	else
-		echo "#include \"../tests.h\"
-#define OUTPUT_PATH \"${module}/\$counter\$test.output\"
-
-${proto}
-{
-	return (-(${func_name}${brackets} != ${G_CONF_EXPECTED_OUTPUT}));
-}" > "$path"
-	fi
-}
-
 #SECTION - configuration file
 
 LIBUNITconf_create()
@@ -701,6 +624,80 @@ LIBUNITsync_rename_files()
 }
 
 #SECTION - creation
+
+#@description create a template according to @ flags
+#@param {string} module 
+LIBUNITcreate_output_template()
+{
+	local	path
+	local	module=$1
+	local	template
+	local	func_name="$module"
+	local	brackets="()"
+	local	stderr_prefix=""
+	local	stderr_suffix=""
+	local	log_prefix=""
+	local	log_suffix=""
+	local module="$1"
+	local proto="int	$module"_""\$counter""\$test"(void)"
+	local template="	return (-(${module}() != ${G_CONF_EXPECTED_OUTPUT}));"
+
+	path="$G_TARGET_DIR/$module/$G_TEMPLATE_NAME"
+	if test -f "$path";then
+		return ;
+	fi
+	if test "$G_CONF_FUNCTION" != "false";then
+		func_name="$G_CONF_FUNCTION"
+	fi
+	#DOC =>	if func_name has already brackets, don't add others
+	if test "$(LIBUNITutils_index_of "$func_name" "(")" != "-1";then
+		brackets=""
+	fi
+	touch "$path"
+	if test "$G_CONF_OUTPUT" = "true" || test "$G_CONF_STDERR" = "true";then
+		if test "$G_CONF_STDERR" = "true";then
+			stderr_prefix="	child_redirect(&data, 2);
+"
+			stderr_suffix="	if (child_cmp(&data, LIBUNIT_FLAGS_EXIST, 2) != 0)
+		return (child_cleanup(&data), -1);
+"
+
+		fi
+		if test "$G_CONF_OUTPUT" = "true";then
+			log_prefix="	child_redirect(&data, 1);
+"
+			log_suffix="	if (child_cmp(&data, LIBUNIT_FLAGS_ZERO, 1) != 0)
+		return (child_cleanup(&data), -1);
+"
+
+		fi
+		template="$(cat << EOF
+#include "../tests.h"
+#define OUTPUT_PATH "${module}/\$counter\$test.output"
+
+${proto}
+{
+	t_test_fds		data;
+	data = child_init(OUTPUT_PATH);
+${log_prefix}${stderr_prefix}	if (${func_name}${brackets} != ${G_CONF_EXPECTED_OUTPUT})
+		return (child_cleanup(&data), -1);
+${log_suffix}${stderr_suffix}	child_cleanup(&data);
+	return (0);
+}
+
+EOF
+)"
+	echo "$template" > "$path"
+	else
+		echo "#include \"../tests.h\"
+#define OUTPUT_PATH \"${module}/\$counter\$test.output\"
+
+${proto}
+{
+	return (-(${func_name}${brackets} != ${G_CONF_EXPECTED_OUTPUT}));
+}" > "$path"
+	fi
+}
 
 #@description generates a template for the test
 #@param {string} $1:test
