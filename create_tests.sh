@@ -392,6 +392,9 @@ LIBUNITcreate_output_template()
 	local	stderr_suffix=""
 	local	log_prefix=""
 	local	log_suffix=""
+	local module="$1"
+	local proto="int	$module"_""\$counter"_"\$test"(void)"
+	local template="	return (-(${module}() != ${G_CONF_EXPECTED_OUTPUT}));"
 
 	path="$G_TARGET_DIR/$module/$G_TEMPLATE_NAME"
 	if test -f "$path";then
@@ -423,18 +426,31 @@ LIBUNITcreate_output_template()
 
 		fi
 		template="$(cat << EOF
-	t_test_fds		data;
+	#include "../tests.h"
+	#define OUTPUT_PATH "${module}/\$counter_\$test.output"
 
-	data = child_init(OUTPUT_PATH);
-${log_prefix}${stderr_prefix}	if (${func_name}${brackets} != ${G_CONF_EXPECTED_OUTPUT})
-		return (-1);
-${log_suffix}${stderr_suffix}	child_cleanup(&data);
-	return (0);
+	${proto}
+	{
+		t_test_fds		data;
+
+		data = child_init(OUTPUT_PATH);
+	${log_prefix}${stderr_prefix}	if (${func_name}${brackets} != ${G_CONF_EXPECTED_OUTPUT})
+			return (-1);
+	${log_suffix}${stderr_suffix}	child_cleanup(&data);
+		return (0);
+	}
+
 EOF
 )"
 	echo "$template" > "$path"
 	else
-		echo "	return (-(\$func_name${brackets} != ${G_CONF_EXPECTED_OUTPUT}));" > "$path"
+		echo "#include \"../tests.h\"
+#define OUTPUT_PATH \"${module}/\$counter_\$test.output\"
+
+${proto}
+{
+	return (-(\$func_name${brackets} != ${G_CONF_EXPECTED_OUTPUT}));
+}" > "$path"
 	fi
 }
 
@@ -448,25 +464,25 @@ LIBUNITconf_create()
 #SECTION - globals flags: they DON't reset after test ends
 
 #the path to the .o to test. subdirectories are included, files named main.o or *test*.o are not.
-@obj:
+; obj:
 #OPTIONAL:the path to the includes of the .o
-#@inc:/usr/lib/SDL2/
+; @inc:/usr/lib/SDL2/
 #OPTIONAL:true if the output compare is needed. .output files are generated (default: false)
-#@output:true
+; @output:true
 #OPTIONAL:true if you want to personalize tests (default: false)
 #Pro tip: delete foo and bar modules, made your empty modules, run the script and modify the templates
-#@template:true
+; @template:true
 #OPTIONAL:if true, the test fails if it prints something on the stderr (default: false)
-#@stderr:true
+; @stderr:true
 #OPTIONAL:the expected output of the function to test (default: 0)
-#@expected_output:true
+; @expected_output:true
 
 #SECTION - module flags: they reset after test ends
 
 #OPTIONAL:the prototype of the function to test (default: int	<module_name>(void))
-#@proto:"int	foo(void)"
+; @proto:"int	foo(void)"
 #OPTIONAL:the name of the function to test (default: <module_name>)
-#@function:foo
+; @function:foo
 
 \$foo
 [
@@ -621,8 +637,8 @@ LIBUNITsync_backup_template()
 	if test ! -d "$G_BACKUP_DIR/$2";then
 		return ;
 	fi
-	if test "$G_CONF_TEMPLATE" = "true" && test -f "$G_BACKUP_DIR/$2/template";then
-		mv "$G_BACKUP_DIR/$2/template" "$G_TARGET_DIR/$2/template"
+	if test "$G_CONF_TEMPLATE" = "true" && test -f "$G_BACKUP_DIR/$2/$G_TEMPLATE_NAME";then
+		mv "$G_BACKUP_DIR/$2/$G_TEMPLATE_NAME" "$G_TARGET_DIR/$2/$G_TEMPLATE_NAME"
 	fi
 }
 
@@ -698,27 +714,26 @@ LIBUNITcreate_test_template()
 	local header="$(LIBUNITutils_42header "$test_file")"
 	local template="	return (-(${module}() != ${G_CONF_EXPECTED_OUTPUT}));"
 
-	if test 
 	test -f "$path" && return ; 
 	mkdir -p "$G_TARGET_DIR/$module/"
 	#DOC	=>s:exist and is non empty
 	if test -s "$G_TARGET_DIR/$module/$G_TEMPLATE_NAME";then
 		export counter="$counter_var"
 		export test="$test"
+		if test "$G_CONF_FUNCTION" = "false";then
+			export func_name="$test"
+		else
+			export func_name="$G_CONF_FUNCTION"
+		fi
 		template="$(envsubst < $G_TARGET_DIR/$module/$G_TEMPLATE_NAME)"
 		unset counter
 		unset test
+		unset func_name
 	fi
 	cat > "$path" << EOF
 ${header}
 
-#include "../tests.h"
-#define OUTPUT_PATH "$module/${counter_var}_$1.output"
-
-${proto}
-{
 ${template}
-}
 EOF
 }
 

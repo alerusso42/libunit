@@ -82,6 +82,11 @@ make val	#	tests using valgrind
 -	C++ support
 -	server testing support
 
+### Notes
+-	If you need addictional functions:
+	1)	add the .c file in the framework dir
+	2)	add the prototypes you need in libunit.h
+
 #### Study resources
 
 - Using IFS, set command in bash scripts
