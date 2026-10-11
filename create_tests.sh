@@ -10,7 +10,7 @@ readonly G_HEADER_NAME="tests.h"
 readonly G_HEADER="$G_TARGET_DIR/$G_HEADER_NAME"
 readonly G_MAIN="$G_TARGET_DIR/main.c"
 readonly G_LAUNCHER_NAME="launcher"
-readonly G_TEMPLATE_NAME="__template.c"
+readonly G_TEMPLATE_NAME="__template.cc"
 export USER="alerusso"
 #@type {Map<module_name, Array<test_name>>}
 declare -A G_MODULES=()
@@ -393,7 +393,7 @@ LIBUNITcreate_output_template()
 	local	log_prefix=""
 	local	log_suffix=""
 	local module="$1"
-	local proto="int	$module"_""\$counter"_"\$test"(void)"
+	local proto="int	$module"_""\$counter""\$test"(void)"
 	local template="	return (-(${module}() != ${G_CONF_EXPECTED_OUTPUT}));"
 
 	path="$G_TARGET_DIR/$module/$G_TEMPLATE_NAME"
@@ -427,7 +427,7 @@ LIBUNITcreate_output_template()
 		fi
 		template="$(cat << EOF
 	#include "../tests.h"
-	#define OUTPUT_PATH "${module}/\$counter_\$test.output"
+	#define OUTPUT_PATH "${module}/\$counter\$test.output"
 
 	${proto}
 	{
@@ -445,11 +445,11 @@ EOF
 	echo "$template" > "$path"
 	else
 		echo "#include \"../tests.h\"
-#define OUTPUT_PATH \"${module}/\$counter_\$test.output\"
+#define OUTPUT_PATH \"${module}/\$counter\$test.output\"
 
 ${proto}
 {
-	return (-(\$func_name${brackets} != ${G_CONF_EXPECTED_OUTPUT}));
+	return (-(${func_name}${brackets} != ${G_CONF_EXPECTED_OUTPUT}));
 }" > "$path"
 	fi
 }
@@ -464,7 +464,7 @@ LIBUNITconf_create()
 #SECTION - globals flags: they DON't reset after test ends
 
 #the path to the .o to test. subdirectories are included, files named main.o or *test*.o are not.
-; obj:
+; @obj:
 #OPTIONAL:the path to the includes of the .o
 ; @inc:/usr/lib/SDL2/
 #OPTIONAL:true if the output compare is needed. .output files are generated (default: false)
@@ -601,13 +601,16 @@ LIBUNITconf_parse()
 	if test "${obj_path}" = "empty" && test "${G_CONF_INC}" = "empty";then
 		LIBUNITerror "conf parse: the field @obj:<path> (or @inc:<path>) is mandatory! give the path to the dir where you keep them. Example: '@obj:../my_awesome_project'. they are found recursively in your workdir"
 	fi
+	G_CONF_OBJ="$(find "$G_CONF_OBJ" -name "*.o" ! -name "main.o" ! -name "*test*" 2>/dev/null | tr '\n' ' ')"
 	if test "${obj_path}" = "empty";then
 		echo "PARSE OK!"
 		return
 	fi
-	test -d "${obj_path}" || LIBUNITerror "conf parse: the path \"${obj_path}\" does not exist"
+	if test "${obj_path}" = "./";then
+		LIBUNITerror "conf parse: the path ./ is not allowed."
+	fi
 	#DOC => if there are no object in the path, error
-	G_CONF_OBJ="$(find "$G_CONF_OBJ" -name "*.o" ! -name "main.o" ! -name "*test*" 2>/dev/null)"
+	test -d "${obj_path}" || LIBUNITerror "conf parse: the path \"${obj_path}\" does not exist"
 	if test "$G_CONF_OBJ" = "";then
 		LIBUNITerror "conf parse: the path \"${obj_path}\" and its subdirectories have no object inside. Have you compiled it? tip: main.o and files with 'test' in the name are excluded."
 	fi
@@ -709,26 +712,19 @@ LIBUNITcreate_test_template()
 	local counter_var=$(LIBUNITutils_index_number $2)
 	local test_file="$counter_var""_$1.c"
 	local module="$3"
-	local proto="int	$module""_$counter_var""_$test(void)"
 	local path="$(LIBUNITutils_get_testpath "$1" $2 "$3")"
 	local header="$(LIBUNITutils_42header "$test_file")"
 	local template="	return (-(${module}() != ${G_CONF_EXPECTED_OUTPUT}));"
 
-	test -f "$path" && return ; 
+	test -f "$path" && return
 	mkdir -p "$G_TARGET_DIR/$module/"
 	#DOC	=>s:exist and is non empty
 	if test -s "$G_TARGET_DIR/$module/$G_TEMPLATE_NAME";then
 		export counter="$counter_var"
-		export test="$test"
-		if test "$G_CONF_FUNCTION" = "false";then
-			export func_name="$test"
-		else
-			export func_name="$G_CONF_FUNCTION"
-		fi
+		export test="_$test"
 		template="$(envsubst < $G_TARGET_DIR/$module/$G_TEMPLATE_NAME)"
 		unset counter
 		unset test
-		unset func_name
 	fi
 	cat > "$path" << EOF
 ${header}
@@ -779,7 +775,7 @@ LIBUNITcreate_makefile()
 	fi
 	for module in "${!G_MODULES[@]}";do
 		files="$files"'\
-	$(addprefix '"$module"'/, $(shell ls '"$module"' | grep '\''\.c'\'' | grep -v '"$G_CONF_TEMPLATE"'))'
+	$(addprefix '"$module"'/, $(shell ls '"$module"' | grep '\''\.c'\'' | grep -v '"$G_TEMPLATE_NAME"'))'
 	done
 	cat > "$G_MAKEFILE" << EOF
 ${files}
@@ -788,7 +784,7 @@ LIBUNIT = ../libunit.a
 PROJ_INC_DIR = ${includes}
 PROJ_OBJ = ../${G_CONF_OBJ}
 OBJ = \$(SRC:.c=.o)
-COMP = cc -g -Wall -Werror -Wextra
+COMP = gcc -g -Wall -Werror -Wextra
 
 all: \$(NAME)
 	
@@ -892,6 +888,7 @@ LIBUNITmain()
 	LIBUNITutils_foreach_file LIBUNITsync_delete_empty_dir "$G_TARGET_DIR"
 	for module in "${!G_MODULES[@]}";do
 		echo "$module:	" "${G_MODULES["$module"]}"
+		rm -f "${G_BACKUP_DIR}/${module}/"*.o
 	done
 }
 

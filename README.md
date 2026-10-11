@@ -20,7 +20,7 @@ Main features:
 ## How to use
 1)	install
 ```bash
-git clone -b tester [URL] && cd libunit
+git clone git@github.com:alerusso42/libunit.git && cd libunit
 ```
 2)	check that the tester works properly
 ```bash

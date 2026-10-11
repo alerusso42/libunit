@@ -4,7 +4,7 @@ OTHER =
 SRC = $(LIBUNIT)
 OBJ_SRC = $(SRC:.c=.o)
 OBJ = $(OBJ_SRC)
-COMP = cc -g -Wall -Werror -Wextra
+COMP = gcc -g -Wall -Werror -Wextra
 SHELL := /bin/bash				
 DIV = "\033[33m---------------------------\033[0m\n"
 TABS = "-------"
