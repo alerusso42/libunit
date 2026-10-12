@@ -1,8 +1,6 @@
 # Libunit
 log/
 backup/
-real-tests/
-setup_test.ini
 
 # Prerequisites
 *.d
